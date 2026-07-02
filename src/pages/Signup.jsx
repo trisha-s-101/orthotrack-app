@@ -1,7 +1,7 @@
-import {useState} from "react"
+import { useState} from "react";
 import { supabase } from "../supabaseClient"
 
-const Login = () => {
+const Signup = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -14,26 +14,26 @@ const Login = () => {
         setPassword("")
     }
 
-  async function handleLogin(e) {
+  async function handleSignUp(e) {
     e.preventDefault()
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     })
 
     if (error) {
-      console.log("Login error:", error.message)
+      console.log("Signup error:", error.message)
     } else {
-      console.log("Login success:", data)
+      console.log("Signup success:", data)
     }
   }
 
     return (
     <>
         <div className="min-h-screen flex gap-8 items-center justify-center bg-gray-50 ">
-            <form onSubmit={handleLogin} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
-                <h1 className="text-2xl text-center mb-5"> Login</h1>
+            <form onSubmit={handleSignUp} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
+                <h1 className="text-2xl text-center mb-5"> Sign Up</h1>
                 <label className="" htmlFor="email"> Email </label>
                 <input className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
                 <label htmlFor="password"> Password </label>
@@ -44,4 +44,4 @@ const Login = () => {
     </>)
 }
 
-export default Login; 
+export default Signup;
