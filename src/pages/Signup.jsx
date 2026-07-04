@@ -1,10 +1,12 @@
 import { useState} from "react";
 import { supabase } from "../supabaseClient"
+import { Link, useNavigate} from "react-router-dom";
 
-const Signup = () => {
+const Signup = ({setUser}) => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const navigate
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -31,6 +33,11 @@ const Signup = () => {
 
     return (
     <>
+     <nav>
+            <Link to="/">
+              <button className=" mt-5 px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50"> Home </button>
+            </Link>
+    </nav>
         <div className="min-h-screen flex gap-8 items-center justify-center bg-gray-50 ">
             <form onSubmit={handleSignUp} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
                 <h1 className="text-2xl text-center mb-5"> Sign Up</h1>
