@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+.form-input {
+  @apply w-full rounded-lg border border-gray-300 px-4 py-3
+         focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.form-label {
+  @apply block mb-2 font-medium text-gray-700;
+}
+
+.primary-button {
+  @apply bg-blue-600 text-white rounded-lg py-3 hover:bg-blue-700 transition;
+}

@@ -2,19 +2,11 @@ import {useState} from "react"
 import { supabase } from "../supabaseClient"
 import { Link, useNavigate } from "react-router-dom"
 
-const Login = (setUser) => {
+const Login = ({setUser}) => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
-
-    const onSubmit = (e) => {
-        e.preventDefault();
-        console.log("Email is: ", email);
-        console.log("Password is: ", password);
-        setEmail("")
-        setPassword("")
-    }
 
   async function handleLogin(e) {
     e.preventDefault()
@@ -45,11 +37,11 @@ const Login = (setUser) => {
         <div className="min-h-screen flex gap-8 items-center justify-center bg-gray-50 ">
             <form onSubmit={handleLogin} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
                 <h1 className="text-2xl text-center mb-5"> Login</h1>
-                <label className="" htmlFor="email"> Email </label>
-                <input className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
-                <label htmlFor="password"> Password </label>
-                <input className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
-                <button type="submit" className="mt-10 border border-b-teal-800 rounded-full bg-blue-500" > Submit </button>
+                <label className="form-label" htmlFor="email"> Email </label>
+                <input className="form-input" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
+                <label htmlFor="password" className="form-label"> Password </label>
+                <input className="form-input" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
+                <button type="submit" className="primary-button" > Submit </button>
             </form>
         </div>
     </>)
