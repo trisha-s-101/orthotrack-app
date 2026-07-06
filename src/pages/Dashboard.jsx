@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { supabase } from "../supabaseClient";
 
 const Dashboard = ({user}) => {
@@ -10,8 +10,9 @@ const Dashboard = ({user}) => {
     const [date, setDate] = useState(today)
     const [bodyPart, setBodyPart] = useState("")
     const [description, setDescription] = useState("")
+    const [injuriesList, setInjuriesList] = useState([])
 
-    async function handleInjury(e) {
+    async function addInjury(e) {
         e.preventDefault();
 
         const { data, error } = await supabase
@@ -29,10 +30,30 @@ const Dashboard = ({user}) => {
 
         if (error) {
         console.log("Error:", error.message)
-        } else {
+        } 
+        else {
         console.log("Success:", data)
         }
     }
+
+    useEffect(() => {
+
+        async function getInjury() {
+            const {data, error} = await supabase
+            .from("injuries") //table name
+            .select("*")
+            .eq("user_id", user.id) //where user.id equals the user id
+
+            if(error){
+                console.log(error.message)
+            }
+            else{
+                setInjuriesList(data)
+            }
+        }
+
+        getInjury()
+    },[user.id])
 
     return (
         <>
@@ -45,7 +66,7 @@ const Dashboard = ({user}) => {
                 <div className="mx-50">
                     <h1> Dashboard </h1>
                     <h1> Welcome {user?.email}</h1>
-                    <form className="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-5" onSubmit={handleInjury}>
+                    <form onSubmit={addInjury} className="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-5">
                         <label htmlFor="name" className="form-label"> Name </label>
                         <input type="text" id="name" placeholder="Name" className="form-input" value={name} onChange={e=>setName(e.target.value)}></input>
                         <label htmlFor="injury_date" className="form-label"> Injury Date </label>
@@ -56,6 +77,16 @@ const Dashboard = ({user}) => {
                         <input type="text" id="description" placeholder="Description" value={description} className="form-input" onChange={e=>setDescription(e.target.value)}></input>
                         <button type="submit" className="primary-button"> Submit </button>
                     </form>
+                    <div id="injuryList"> 
+                        {injuriesList.map((injury) => (
+                            <div key={injury.user_id}> 
+                                <h2>{injury.name}</h2>
+                                <h3>{injury.injury_date}</h3>
+                                <h3>{injury.body_part}</h3>
+                                <h3>{injury.description}</h3>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </>)
