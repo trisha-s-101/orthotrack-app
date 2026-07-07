@@ -12,6 +12,24 @@ const Dashboard = ({user}) => {
     const [description, setDescription] = useState("")
     const [injuriesList, setInjuriesList] = useState([])
 
+    async function getInjury() {
+            const {data, error} = await supabase
+            .from("injuries") //table name
+            .select("*")
+            .eq("user_id", user.id) //where user.id equals the user id
+
+            if(error){
+                console.log(error.message)
+            }
+            else{
+                setInjuriesList(data)
+            }
+    }
+    
+    useEffect(() => {
+        getInjury()
+    },[user.id])
+
     async function addInjury(e) {
         e.preventDefault();
 
@@ -33,27 +51,13 @@ const Dashboard = ({user}) => {
         } 
         else {
         console.log("Success:", data)
+        await getInjury()
+        setName("")
+        setDate(today)
+        setBodyPart("")
+        setDescription("")
         }
     }
-
-    useEffect(() => {
-
-        async function getInjury() {
-            const {data, error} = await supabase
-            .from("injuries") //table name
-            .select("*")
-            .eq("user_id", user.id) //where user.id equals the user id
-
-            if(error){
-                console.log(error.message)
-            }
-            else{
-                setInjuriesList(data)
-            }
-        }
-
-        getInjury()
-    },[user.id])
 
     return (
         <>
@@ -66,7 +70,38 @@ const Dashboard = ({user}) => {
                 <div className="mx-50">
                     <h1> Dashboard </h1>
                     <h1> Welcome {user?.email}</h1>
-                    <form onSubmit={addInjury} className="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-5">
+                
+                    <div id="injuryList" className="mt-10"> 
+                        <h2 className="text-2xl font-semibold mb-5">Your Injuries</h2>
+
+                        {injuriesList.length === 0 ? (
+                            <p className="text-gray-500"> No injuries added yet.</p>
+                        ) : (
+                            <div className="flex flex-col gap-4"> 
+                                {injuriesList.map((injury) => (
+                                <div key={injury.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200"> 
+                                    <h3 className="text-xl font-semibold text-blue-600">{injury.name}</h3>
+                                    <div className="mt-3 space-y-1 text-gray-700">
+                                        <p>
+                                            <span className="font-medium">Date:</span>{" "}
+                                            {injury.injury_date}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium">Body Part:</span>{" "}
+                                            {injury.body_part}
+                                        </p>
+                                        <p>
+                                            <span className="font-medium">Description:</span>{" "}
+                                            {injury.description}
+                                        </p>
+                                    </div>
+                                </div>
+                                ))}
+                            </div>
+                        )}                   
+                    </div>
+
+                    <form onSubmit={addInjury} className="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-5 mt-20">
                         <label htmlFor="name" className="form-label"> Name </label>
                         <input type="text" id="name" placeholder="Name" className="form-input" value={name} onChange={e=>setName(e.target.value)}></input>
                         <label htmlFor="injury_date" className="form-label"> Injury Date </label>
@@ -77,16 +112,6 @@ const Dashboard = ({user}) => {
                         <input type="text" id="description" placeholder="Description" value={description} className="form-input" onChange={e=>setDescription(e.target.value)}></input>
                         <button type="submit" className="primary-button"> Submit </button>
                     </form>
-                    <div id="injuryList"> 
-                        {injuriesList.map((injury) => (
-                            <div key={injury.user_id}> 
-                                <h2>{injury.name}</h2>
-                                <h3>{injury.injury_date}</h3>
-                                <h3>{injury.body_part}</h3>
-                                <h3>{injury.description}</h3>
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </div>
         </>)
