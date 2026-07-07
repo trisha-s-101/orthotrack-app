@@ -13,17 +13,17 @@ const Dashboard = ({user}) => {
     const [injuriesList, setInjuriesList] = useState([])
 
     async function getInjury() {
-            const {data, error} = await supabase
-            .from("injuries") //table name
-            .select("*")
-            .eq("user_id", user.id) //where user.id equals the user id
+        const {data, error} = await supabase
+        .from("injuries") //table name
+        .select("*")
+        .eq("user_id", user.id) //where user.id equals the user id
 
-            if(error){
-                console.log(error.message)
-            }
-            else{
-                setInjuriesList(data)
-            }
+        if(error){
+            console.log(error.message)
+        }
+        else{
+            setInjuriesList(data)
+        }
     }
     
     useEffect(() => {
@@ -56,6 +56,21 @@ const Dashboard = ({user}) => {
         setDate(today)
         setBodyPart("")
         setDescription("")
+        }
+    }
+
+    async function deleteInjury(id) {
+        const { error } = await supabase
+        .from("injuries")
+        .delete()
+        .eq("id", id)
+
+        if(error){
+            console.log(error)
+        }
+        else{
+            console.log("Deleted")
+            setInjuriesList(injuriesList.filter(injury => injury.id !== id))
         }
     }
 
@@ -94,6 +109,7 @@ const Dashboard = ({user}) => {
                                             <span className="font-medium">Description:</span>{" "}
                                             {injury.description}
                                         </p>
+                                        <button onClick={() => deleteInjury(injury.id)} className="font-black border border-blue-500 primary-button">Delete</button>
                                     </div>
                                 </div>
                                 ))}
