@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect} from "react";
 import { supabase } from "../supabaseClient";
+import Navbar from "../components/Navbar"
 
 const Dashboard = ({user}) => {
 
@@ -76,59 +77,52 @@ const Dashboard = ({user}) => {
 
     return (
         <>
-            <div className="max-h-1/2 bg-gray-50 px-6 py-8"> 
-                <nav className="mb-8">
-                    <Link to="/">
-                    <button className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50"> Home </button>
-                    </Link>
-                </nav>
-                <div className="mx-50">
-                    <h1> Dashboard </h1>
-                    <h1> Welcome {user?.email}</h1>
-                
-                    <div id="injuryList" className="mt-10"> 
-                        <h2 className="text-2xl font-semibold mb-5">Your Injuries</h2>
+            <Navbar />
+            <div className="mx-50">
+                <h1> Welcome {user?.email}</h1>
+            
+                <div id="injuryList" className="mt-10"> 
+                    <h2 className="text-2xl font-semibold mb-5">Your Injuries</h2>
 
-                        {injuriesList.length === 0 ? (
-                            <p className="text-gray-500"> No injuries added yet.</p>
-                        ) : (
-                            <div className="flex flex-col gap-4"> 
-                                {injuriesList.map((injury) => (
-                                <div key={injury.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200"> 
-                                    <h3 className="text-xl font-semibold text-blue-600">{injury.name}</h3>
-                                    <div className="mt-3 space-y-1 text-gray-700">
-                                        <p>
-                                            <span className="font-medium">Date:</span>{" "}
-                                            {injury.injury_date}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">Body Part:</span>{" "}
-                                            {injury.body_part}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium">Description:</span>{" "}
-                                            {injury.description}
-                                        </p>
-                                        <button onClick={() => deleteInjury(injury.id)} className="font-black border border-blue-500 primary-button">Delete</button>
-                                    </div>
+                    {injuriesList.length === 0 ? (
+                        <p className="text-gray-500"> No injuries added yet.</p>
+                    ) : (
+                        <div className="flex flex-col gap-4"> 
+                            {injuriesList.map((injury) => (
+                            <div key={injury.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200"> 
+                                <h3 className="text-xl font-semibold text-blue-600">{injury.name}</h3>
+                                <div className="mt-3 space-y-1 text-gray-700">
+                                    <p>
+                                        <span className="font-medium">Date:</span>{" "}
+                                        {injury.injury_date}
+                                    </p>
+                                    <p>
+                                        <span className="font-medium">Body Part:</span>{" "}
+                                        {injury.body_part}
+                                    </p>
+                                    <p>
+                                        <span className="font-medium">Description:</span>{" "}
+                                        {injury.description}
+                                    </p>
+                                    <button onClick={() => deleteInjury(injury.id)} className="font-black border border-blue-500 primary-button">Delete</button>
                                 </div>
-                                ))}
                             </div>
-                        )}                   
-                    </div>
-
-                    <form onSubmit={addInjury} className="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-5 mt-20">
-                        <label htmlFor="name" className="form-label"> Name </label>
-                        <input type="text" id="name" placeholder="Name" className="form-input" value={name} onChange={e=>setName(e.target.value)}></input>
-                        <label htmlFor="injury_date" className="form-label"> Injury Date </label>
-                        <input type="date" id="injury_date" className="form-input" value={date} onChange={e=>setDate(e.target.value)}></input>
-                        <label htmlFor="body_part" className="form-label"> Body Part</label>
-                        <input type="text" id="body_part" placeholder="Body Part" value={bodyPart} className="form-input" onChange={e=>setBodyPart(e.target.value)}></input>
-                        <label htmlFor="description" className="form-label"> Description </label>
-                        <input type="text" id="description" placeholder="Description" value={description} className="form-input" onChange={e=>setDescription(e.target.value)}></input>
-                        <button type="submit" className="primary-button"> Submit </button>
-                    </form>
+                            ))}
+                        </div>
+                    )}                   
                 </div>
+
+                <form onSubmit={addInjury} className="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-5 mt-20">
+                    <label htmlFor="name" className="form-label"> Name </label>
+                    <input type="text" id="name" placeholder="Name" className="form-input" value={name} onChange={e=>setName(e.target.value)}></input>
+                    <label htmlFor="injury_date" className="form-label"> Injury Date </label>
+                    <input type="date" id="injury_date" className="form-input" value={date} onChange={e=>setDate(e.target.value)}></input>
+                    <label htmlFor="body_part" className="form-label"> Body Part</label>
+                    <input type="text" id="body_part" placeholder="Body Part" value={bodyPart} className="form-input" onChange={e=>setBodyPart(e.target.value)}></input>
+                    <label htmlFor="description" className="form-label"> Description </label>
+                    <input type="text" id="description" placeholder="Description" value={description} className="form-input" onChange={e=>setDescription(e.target.value)}></input>
+                    <button type="submit" className="primary-button"> Submit </button>
+                </form>
             </div>
         </>)
 }
