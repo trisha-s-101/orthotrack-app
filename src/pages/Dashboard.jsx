@@ -77,7 +77,6 @@ const Dashboard = ({user}) => {
 
     return (
         <>
-            <Navbar />
             <div className="mx-50">
                 <h1> Welcome {user?.email}</h1>
             

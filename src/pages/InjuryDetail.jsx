@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { supabase } from "../supabaseClient"
-import TimelineEventForm from "../components/TimelineEventForm"
 
 const InjuryDetail = ({ user }) => {
   const { id } = useParams()
@@ -69,12 +68,6 @@ const InjuryDetail = ({ user }) => {
           </p>
         )}
       </div>
-
-      <TimelineEventForm
-        injuryId={id}
-        user={user}
-        onEventCreated={fetchEvents}
-      />
 
       <div>
         <h2 className="text-2xl font-bold mb-4">Timeline</h2>

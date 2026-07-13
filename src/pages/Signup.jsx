@@ -30,17 +30,16 @@ const Signup = ({setUser}) => {
 
     return (
     <>
-      <Navbar />
-        <div className="min-h-screen flex gap-8 items-center justify-center bg-gray-50 ">
-            <form onSubmit={handleSignUp} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
-                <h1 className="text-2xl text-center mb-5"> Sign Up</h1>
-                <label className="form-label" htmlFor="email"> Email </label>
-                <input className="form-input" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
-                <label htmlFor="password" className="form-label"> Password </label>
-                <input className="form-input" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
-                <button type="submit" className="primary-button" > Submit </button>
-            </form>
-        </div>
+      <div className="min-h-screen flex gap-8 items-center justify-center bg-gray-50 ">
+          <form onSubmit={handleSignUp} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
+              <h1 className="text-2xl text-center mb-5"> Sign Up</h1>
+              <label className="form-label" htmlFor="email"> Email </label>
+              <input className="form-input" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
+              <label htmlFor="password" className="form-label"> Password </label>
+              <input className="form-input" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
+              <button type="submit" className="primary-button" > Submit </button>
+          </form>
+      </div>
     </>)
 }
 
