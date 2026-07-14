@@ -7,11 +7,17 @@ import Signup from "./pages/Signup.jsx"
 import Dashboard from "./pages/Dashboard.jsx"
 import InjuryDetail from "./pages/InjuryDetail.jsx"
 import { Routes, Route } from 'react-router-dom'
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { supabase } from "./supabaseClient.js"
 
 function App() {
 
   const [user, setUser] = useState(null)
+  useEffect(() => {
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setUser(session?.user ?? null)
+  })
+}, [])
 
   return (
     <>
