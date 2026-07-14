@@ -88,25 +88,27 @@ const Dashboard = ({user}) => {
                     ) : (
                         <div className="flex flex-col gap-4"> 
                             {injuriesList.map((injury) => (
-                            <div key={injury.id} className="bg-white rounded-xl shadow-md p-6 border border-gray-200"> 
-                                <h3 className="text-xl font-semibold text-blue-600">{injury.name}</h3>
-                                <div className="mt-3 space-y-1 text-gray-700">
-                                    <p>
-                                        <span className="font-medium">Date:</span>{" "}
-                                        {injury.injury_date}
-                                    </p>
-                                    <p>
-                                        <span className="font-medium">Body Part:</span>{" "}
-                                        {injury.body_part}
-                                    </p>
-                                    <p>
-                                        <span className="font-medium">Description:</span>{" "}
-                                        {injury.description}
-                                    </p>
-                                    <button onClick={() => deleteInjury(injury.id)} className="font-black border border-blue-500 primary-button">Delete</button>
-                                </div>
-                            </div>
-                            ))}
+                                <Link key={injury.id} to={`/injuries/${injury.id}`}>
+                                    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200"> 
+                                        <h3 className="text-xl font-semibold text-blue-600">{injury.name}</h3>
+                                        <div className="mt-3 space-y-1 text-gray-700">
+                                            <p>
+                                                <span className="font-medium">Date:</span>{" "}
+                                                {injury.injury_date}
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">Body Part:</span>{" "}
+                                                {injury.body_part}
+                                            </p>
+                                            <p>
+                                                <span className="font-medium">Description:</span>{" "}
+                                                {injury.description}
+                                            </p>
+                                            <button onClick={() => deleteInjury(injury.id)} className="font-black border border-blue-500 primary-button">Delete</button>
+                                        </div>
+                                    </div>
+                                </Link>
+                                ))}
                         </div>
                     )}                   
                 </div>

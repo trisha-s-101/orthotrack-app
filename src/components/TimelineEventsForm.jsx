@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { supabase } from "../supabaseClient"
 
-const TimelineEventForm = ({ injuryId, user, onEventCreated }) => {
+const TimelineEventsForm = ({ injuryId, user, onEventCreated }) => {
   const today = new Date().toISOString().split('T')[0]
 
   const [title, setTitle] = useState("")
@@ -140,4 +140,4 @@ const TimelineEventForm = ({ injuryId, user, onEventCreated }) => {
   )
 }
 
-export default TimelineEventForm
+export default TimelineEventsForm
