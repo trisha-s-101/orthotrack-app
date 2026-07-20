@@ -64,6 +64,34 @@ const InjuryDetail = ({ user }) => {
         }
   }
 
+  async function deleteDocument(eventId, documentUrl) {
+  
+  const urlParts = documentUrl.split('/documents/')[1]
+
+  const { error: deleteError } = await supabase.storage
+    .from('documents')
+    .remove([urlParts])
+
+  if (deleteError) {
+    console.log("Error deleting file:", deleteError.message)
+    return
+  }
+
+  const { error: updateError } = await supabase
+    .from('timeline_events')
+    .update({
+      document_url: null,
+      document_name: null,
+    })
+    .eq('id', eventId)
+
+  if (updateError) {
+    console.log("Error updating event:", updateError.message)
+  } else {
+    fetchEvents()  // Refresh the list
+  }
+}
+
   if (loading) return <div className="p-6">Loading...</div>
   if (!injury) return <div className="p-6">Injury not found</div>
 
@@ -127,17 +155,25 @@ const InjuryDetail = ({ user }) => {
                     <p className="text-gray-700 mb-2">{event.notes}</p>
                   )}
                   {event.document_url && (
-                    <a
-                        href={event.document_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline text-sm"
-                    >
-                        📄 {event.document_name}
-                    </a>
+                    <div className="flex items-center gap-2"> 
+                      <a
+                          href={event.document_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-sm"
+                      >
+                          📄 {event.document_name}
+                      </a>
+                      <button 
+                      onClick={() => deleteDocument(event.id, event.document_url)}
+                      className="text-red-600 hover:text-red-800 text-sm font-semibold"
+                      > 
+                        Remove Document
+                        </button>
+                    </div>
                 )}
                   <button onClick={() => setEditingEvent(event)} className="border border-cyan-700">Edit</button>
-                  <button onClick={() => deleteEvent(event)} className="border border-cyan-700">Delete</button>
+                  <button onClick={() => deleteEvent(event.id)} className="border border-cyan-700">Delete</button>
                 </div>
               </div>
             </div>
