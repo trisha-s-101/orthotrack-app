@@ -47,6 +47,21 @@ const InjuryDetail = ({ user }) => {
     }
   }
 
+  async function deleteEvent(id){
+    const { error } = await supabase
+        .from("timeline_events")
+        .delete()
+        .eq("id", id)
+
+        if(error){
+            console.log(error)
+        }
+        else{
+            console.log("Deleted")
+            setEvents(events.filter(event => event.id !== id))
+        }
+  }
+
   if (loading) return <div className="p-6">Loading...</div>
   if (!injury) return <div className="p-6">Injury not found</div>
 
@@ -88,7 +103,7 @@ const InjuryDetail = ({ user }) => {
               className="bg-white rounded-lg shadow-md p-4 mb-4 border-l-4 border-blue-600"
             >
               <div className="flex justify-between items-start">
-                <div>
+                <div className="flex flex-col">
                   <h3 className="font-bold text-lg">{event.title}</h3>
                   <p className="text-sm text-gray-500 mb-2">
                     {event.event_date} • {event.type}
@@ -106,6 +121,7 @@ const InjuryDetail = ({ user }) => {
                         📄 {event.document_name}
                     </a>
                 )}
+                  <button onClick={() => deleteEvent(event.id)} className="border border-cyan-700">Delete</button>
                 </div>
               </div>
             </div>
