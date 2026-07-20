@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { supabase } from "../supabaseClient"
 import TimelineEventsForm from "../components/TimelineEventsForm"
+import TimelineEventEditForm from '../components/TimelineEventEditForm'
 
 
 const InjuryDetail = ({ user }) => {
@@ -10,6 +11,7 @@ const InjuryDetail = ({ user }) => {
   const [injury, setInjury] = useState(null)
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
+  const [editingEvent, setEditingEvent] = useState(null)
 
   useEffect(() => {
     fetchInjury()
@@ -92,6 +94,19 @@ const InjuryDetail = ({ user }) => {
       onEventCreated={fetchEvents}
       />
 
+      {editingEvent && (
+        <TimelineEventEditForm
+          event={editingEvent}
+          injuryId={id}
+          user={user}
+          onEventUpdated={() => {
+            setEditingEvent(null)
+            fetchEvents()
+          }}
+          onCancel={() => setEditingEvent(null)}
+        />
+      )}
+
       <div>
         <h2 className="text-2xl font-bold mb-4">Timeline</h2>
         {events.length === 0 ? (
@@ -121,7 +136,8 @@ const InjuryDetail = ({ user }) => {
                         📄 {event.document_name}
                     </a>
                 )}
-                  <button onClick={() => deleteEvent(event.id)} className="border border-cyan-700">Delete</button>
+                  <button onClick={() => setEditingEvent(event)} className="border border-cyan-700">Edit</button>
+                  <button onClick={() => deleteEvent(event)} className="border border-cyan-700">Delete</button>
                 </div>
               </div>
             </div>
