@@ -20,7 +20,8 @@ const TimelineEventsForm = ({ injuryId, user, onEventCreated }) => {
 
     // Upload file if provided
     if (file) {
-      const fileName = `${user.id}/${injuryId}/${Date.now()}_${file.name}`
+      const sanitizedFileName = file.name.replace(/\s+/g, '_')
+      const fileName = `${user.id}/${injuryId}/${Date.now()}_${sanitizedFileName}`
       const { error: uploadError } = await supabase.storage
         .from('documents')
         .upload(fileName, file)

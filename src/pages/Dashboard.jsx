@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect} from "react";
 import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar"
 
 const Dashboard = ({user}) => {
+    
+    console.log("HERE")
 
     const today = new Date().toISOString().split('T')[0];
 

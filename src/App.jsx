@@ -9,15 +9,20 @@ import InjuryDetail from "./pages/InjuryDetail.jsx"
 import { Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from "react"
 import { supabase } from "./supabaseClient.js"
+import ProtectedRoute from "./components/ProtectedRoute.jsx"
 
 function App() {
 
   const [user, setUser] = useState(null)
+
   useEffect(() => {
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    setUser(session?.user ?? null)
-  })
-}, [])
+  async function checkSession() {
+    const { data } = await supabase.auth.getSession()
+    setUser(data.session?.user ?? null)
+  }
+
+  checkSession()
+  }, [])
 
   return (
     <>
@@ -33,9 +38,12 @@ function App() {
         </Route>
         <Route path="/login" element={<Login setUser={setUser}/>} />
         <Route path="/signup" element={<Signup setUser={setUser} />} />
-        <Route path="/dashboard" element={<Dashboard user={user} />} />
-        <Route path="/injuries/:id" element={<InjuryDetail user={user} />} />
-
+        <Route path="/dashboard" element={
+          <ProtectedRoute user={user}> <Dashboard user={user} /> </ProtectedRoute>
+          } />
+        <Route path="/injuries/:id" element={
+          <ProtectedRoute user={user}> <InjuryDetail user={user} /> </ProtectedRoute>
+          } />
       </Routes>
     </>
   )
