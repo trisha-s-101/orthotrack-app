@@ -10,6 +10,7 @@ import { Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from "react"
 import { supabase } from "./supabaseClient.js"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
+import ROM from "./pages/ROM";
 
 function App() {
 
@@ -44,6 +45,7 @@ function App() {
         <Route path="/injuries/:id" element={
           <ProtectedRoute user={user}> <InjuryDetail user={user} /> </ProtectedRoute>
           } />
+        <Route path="/rom" element={<ROM />} />
       </Routes>
     </>
   )
