@@ -1,0 +1,181 @@
+import mediapipe as mp
+import math
+import numpy as np
+import cv2 
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
+import os
+import tempfile 
+import base64
+
+app = Flask(__name__)
+CORS(app)  # Allows React frontend to call this Flask server
+
+# --- NEW: Read the model file into RAM once when the server starts ---
+MODEL_PATH = "./pose_landmarker_lite.task"
+with open(MODEL_PATH, "rb") as f:
+    MODEL_BYTES = f.read()
+# ---------------------------------------------------------------------
+
+
+@app.route("/analyze-rom", methods=['POST'])
+def analyzeVideo():
+    if 'video' not in request.files:
+        return jsonify({'error': 'No video file provided'}), 400
+    file = request.files['video']  # 'video' is the field name, not the filename
+
+    # 2. Save temporarily to disk
+    suffix = os.path.splitext(file.filename)[1]  # preserves .mp4, .mov etc
+    temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
+    os.close(temp_fd)  # close the file descriptor, we just need the path
+    
+    try:
+        file.save(temp_path)
+
+        # Run MediaPipe processing with the saved path
+        results = process_video(temp_path)
+
+        #Return results to React
+        return jsonify(results)
+    
+    finally:
+        #cleaning up temp files
+
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+
+
+def process_video(video_path):
+    angles = []
+    preview_image_b64 = None # We will store our Base64 image string here
+
+    video = cv2.VideoCapture(video_path)
+
+    # Create the detector
+    # Use the global MODEL_BYTES from RAM instead of reading the file
+    base_options = python.BaseOptions(model_asset_buffer=MODEL_BYTES)
+
+    options = vision.PoseLandmarkerOptions(
+        base_options=base_options,
+        running_mode=vision.RunningMode.VIDEO
+    )
+
+    detector = vision.PoseLandmarker.create_from_options(options)
+
+    #calculating the angle given three points
+
+
+    def calculate_angle(landmark1, landmark2, landmark3):
+        x1 = landmark1.x
+        y1 = landmark1.y
+        x2 = landmark2.x
+        y2 = landmark2.y
+        x3 = landmark3.x
+        y3 = landmark3.y
+
+        vector1 = [x1-x2, y1-y2]
+        vector2 = [x3-x2, y3-y2]
+
+        dot_product = (vector1[0] * vector2[0]) + (vector1[1] * vector2[1])
+
+        magnitude1 = math.sqrt(vector1[0] ** 2 + vector1[1] ** 2)
+        magnitude2 = math.sqrt(vector2[0] ** 2 + vector2[1] ** 2)
+
+        result = dot_product / (magnitude1 * magnitude2)
+        # CRITICAL FIX: Clamp the value between -1.0 and 1.0 to prevent math domain errors
+        result = max(-1.0, min(1.0, result))
+        result = math.acos(result)
+        result_degrees = math.degrees(result)
+
+        return result_degrees
+
+    fps = video.get(cv2.CAP_PROP_FPS)
+
+    if fps <= 0:
+        fps = 30.0
+
+    frame_count = 0
+
+    # Reference MediaPipe pose landmarker constants for easier index readability
+    # Example: 11 = Left Shoulder, 13 = Left Elbow, 15 = Left Wrist
+    LEFT_SHOULDER = 11
+    LEFT_ELBOW = 13
+    LEFT_WRIST = 15
+
+    while video.isOpened():
+        success, frame = video.read()
+        if not success:
+            break
+
+        height, width, _ = frame.shape
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        mp_image = mp.Image(
+            image_format=mp.ImageFormat.SRGB,
+            data=rgb
+        )
+
+        # CRITICAL: This is guaranteed to increase sequentially every single frame
+        timestamp_ms = int((frame_count * 1000) / fps)
+
+        # Run inference
+        result = detector.detect_for_video(mp_image, timestamp_ms)
+
+        if result.pose_landmarks and len(result.pose_landmarks) > 0:
+            landmarks = result.pose_landmarks[0]
+            # landmark_length = len(landmarks)
+            # middle = int(landmark_length / 2)
+            preview_landmark = landmarks[LEFT_ELBOW]
+
+            # 1. Draw tracking circles safely for the preview
+            
+            xcoordinate = int(preview_landmark.x * width)
+            ycoordinate = int(preview_landmark.y * height)
+            cv2.circle(frame, (xcoordinate, ycoordinate), 5, (0, 255, 0), -1)
+
+            # 2. Capture the FIRST successfully drawn frame to send back as a preview
+            if preview_image_b64 is None:
+                # Encode the OpenCV frame into a JPEG image in memory
+                success_encode, buffer = cv2.imencode('.jpg', frame)
+                if success_encode:
+                    # Convert the raw bytes to a Base64 string that JSON can transport
+                    preview_image_b64 = base64.b64encode(buffer).decode('utf-8')
+
+            # 3. Safely calculate specific target joint angles (e.g., Left Arm bicep curl angle)
+            # This replaces the runaway loop counter completely to prevent IndexErrors
+            try:
+                shoulder = landmarks[LEFT_SHOULDER]
+                elbow = landmarks[LEFT_ELBOW]
+                wrist = landmarks[LEFT_WRIST]
+
+                min_confidence = 0.5
+                if (shoulder.visibility > min_confidence and 
+                    elbow.visibility > min_confidence and 
+                    wrist.visibility > min_confidence):
+
+                    angle = calculate_angle(shoulder, elbow, wrist)
+                    angles.append(angle)
+
+
+            except (IndexError, AttributeError):
+                pass
+
+        # CRITICAL FIX: Increments out here so it runs regardless of detection success
+        frame_count += 1
+
+    video.release()
+    detector.close() # <-- NEW: Destroy the detector to free up server RAM!
+
+    # 2. Return a dictionary that Flask will serialize into JSON
+    return {
+        "status": "success",
+        "total_frames_processed": frame_count,
+        "angles": angles,
+        "preview_image": preview_image_b64
+    }
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
