@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const ROMLab = () => {
+const ROM = () => {
   const [video, setVideo] = useState(null); //stores the file the user selected
   const [loading, setLoading] = useState(false); //controls what the button says (UI)
   const [result, setResult] = useState(null); //stores the JOSN returned by Flask
@@ -11,22 +11,33 @@ const ROMLab = () => {
       return;
     }
 
+    console.log("Video file:", video); // Log the file
+    console.log("Attempting to fetch from: http://localhost:5001/analyze-rom"); // Log the URL
+
     setLoading(true);
 
     const formData = new FormData();
     formData.append("video", video);
 
     try {
-      const response = await fetch("http://localhost:5000/analyze-rom", {
-        method: "POST",
-        body: formData,
-      });
+        console.log("FormData prepared, sending request..."); // Log before fetch
+        const response = await fetch("http://localhost:5001/analyze-rom", {
+            method: "POST",
+            body: formData,
+        });
 
-      const data = await response.json();
-      setResult(data);
-    } catch (error) {
-      console.log(error);
-      alert("Failed to analyze video.");
+        console.log("Response received:", response); // Log after fetch
+
+        if(!response.ok){
+            throw new Error(`HTTP Error! status: ${response.status}`)
+        }
+
+        const data = await response.json();
+        setResult(data);
+    } 
+    catch (error) {
+        console.log("Fetch error:", error); // Log the actual error
+        alert("Failed to analyze video.");
     }
 
     setLoading(false);
@@ -91,4 +102,4 @@ const ROMLab = () => {
   );
 };
 
-export default ROMLab;
+export default ROM;

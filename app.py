@@ -23,29 +23,34 @@ with open(MODEL_PATH, "rb") as f:
 
 @app.route("/analyze-rom", methods=['POST'])
 def analyzeVideo():
+
+    response_data = None
+
     if 'video' not in request.files:
-        return jsonify({'error': 'No video file provided'}), 400
-    file = request.files['video']  # 'video' is the field name, not the filename
-
-    # 2. Save temporarily to disk
-    suffix = os.path.splitext(file.filename)[1]  # preserves .mp4, .mov etc
-    temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
-    os.close(temp_fd)  # close the file descriptor, we just need the path
+        response_data = {'error': 'No video file provided'}
+    else:  # Save temporarily to disk
+        file = request.files['video']  # 'video' is the field name, not the filename
+        suffix = os.path.splitext(file.filename)[1]  # preserves .mp4, .mov etc
+        temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
+        os.close(temp_fd)  # close the file descriptor, we just need the path
     
-    try:
-        file.save(temp_path)
+        try:
+            file.save(temp_path)
+            # Run MediaPipe processing with the saved path
+            response_data = process_video(temp_path)
+        except Exception as e:
+            print(f"ERROR in process video: {e}") # THIS LOGS TO FLASK TERMINAL
+            response_data = {'error': str(e)}
+        finally: #cleaning up temp files
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
 
-        # Run MediaPipe processing with the saved path
-        results = process_video(temp_path)
-
-        #Return results to React
-        return jsonify(results)
-    
-    finally:
-        #cleaning up temp files
-
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
+    # Create response with explicit CORS headers
+    response = jsonify(response_data)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 
 def process_video(video_path):
@@ -178,4 +183,4 @@ def process_video(video_path):
     }
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
