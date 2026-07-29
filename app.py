@@ -20,10 +20,8 @@ with open(MODEL_PATH, "rb") as f:
     MODEL_BYTES = f.read()
 # ---------------------------------------------------------------------
 
-
 @app.route("/analyze-rom", methods=['POST'])
 def analyzeVideo():
-
     response_data = None
 
     if 'video' not in request.files:
@@ -52,7 +50,6 @@ def analyzeVideo():
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
 
-
 def process_video(video_path):
     angles = []
     preview_image_b64 = None # We will store our Base64 image string here
@@ -72,7 +69,6 @@ def process_video(video_path):
 
     #calculating the angle given three points
 
-
     def calculate_angle(landmark1, landmark2, landmark3):
         x1 = landmark1.x
         y1 = landmark1.y
@@ -83,11 +79,12 @@ def process_video(video_path):
 
         vector1 = [x1-x2, y1-y2]
         vector2 = [x3-x2, y3-y2]
-
         dot_product = (vector1[0] * vector2[0]) + (vector1[1] * vector2[1])
-
         magnitude1 = math.sqrt(vector1[0] ** 2 + vector1[1] ** 2)
         magnitude2 = math.sqrt(vector2[0] ** 2 + vector2[1] ** 2)
+
+        if magnitude1 == 0 or magnitude2 == 0:
+            return None
 
         result = dot_product / (magnitude1 * magnitude2)
         # CRITICAL FIX: Clamp the value between -1.0 and 1.0 to prevent math domain errors
@@ -136,7 +133,6 @@ def process_video(video_path):
             preview_landmark = landmarks[LEFT_ELBOW]
 
             # 1. Draw tracking circles safely for the preview
-            
             xcoordinate = int(preview_landmark.x * width)
             ycoordinate = int(preview_landmark.y * height)
             cv2.circle(frame, (xcoordinate, ycoordinate), 5, (0, 255, 0), -1)
@@ -162,8 +158,11 @@ def process_video(video_path):
                     wrist.visibility > min_confidence):
 
                     angle = calculate_angle(shoulder, elbow, wrist)
-                    angles.append(angle)
-
+                    angles.append([
+                        frame_count,
+                        timestamp_ms,
+                        angle
+                        ])
 
             except (IndexError, AttributeError):
                 pass

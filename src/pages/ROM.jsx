@@ -33,6 +33,7 @@ const ROM = () => {
         }
 
         const data = await response.json();
+        console.log("Data received: ", data)
         setResult(data);
     } 
     catch (error) {
@@ -84,7 +85,8 @@ const ROM = () => {
           </p>
 
           <p>
-            <strong>Preview Image:</strong> {result.preview_image}°
+            <strong>Preview Image:</strong> 
+            <img src={`data:image/jpeg;base64,${result.preview_image}`} alt="Preview" />
           </p>
 
           <p>
@@ -92,7 +94,7 @@ const ROM = () => {
           </p>
 
           <p>
-            <strong>Frames Processed:</strong> {result.frame_count}
+            <strong>Frames Processed:</strong> {result.total_frames_processed}
           </p>
 
         </div>
