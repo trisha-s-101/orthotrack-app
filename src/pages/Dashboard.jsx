@@ -107,6 +107,12 @@ const Dashboard = ({user}) => {
                                                 <span className="font-medium">Description:</span>{" "}
                                                 {injury.description}
                                             </p>
+                                            <Link
+                                            to={`/rom/${injury.id}`}
+                                            className="inline-block mt-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                                            >
+                                            Track ROM
+                                            </Link>
                                             <button onClick={() => deleteInjury(injury.id)} className="font-black border border-blue-500 primary-button">Delete</button>
                                         </div>
                                     </div>

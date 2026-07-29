@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom"
 
 const ROM = () => {
   const [video, setVideo] = useState(null); //stores the file the user selected
   const [loading, setLoading] = useState(false); //controls what the button says (UI)
   const [result, setResult] = useState(null); //stores the JOSN returned by Flask
+  const { id } = useParams()
 
   async function handleAnalyze() {
     if (!video) {
@@ -18,6 +20,7 @@ const ROM = () => {
 
     const formData = new FormData();
     formData.append("video", video);
+    formData.append("injuryId", id)
 
     try {
         console.log("FormData prepared, sending request..."); // Log before fetch

@@ -169,6 +169,7 @@ def process_video(video_path):
 
         # CRITICAL FIX: Increments out here so it runs regardless of detection success
         frame_count += 1
+    injury_id = request.form.get("injuryId")
 
     video.release()
     detector.close() # <-- NEW: Destroy the detector to free up server RAM!

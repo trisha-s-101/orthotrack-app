@@ -45,7 +45,7 @@ function App() {
         <Route path="/injuries/:id" element={
           <ProtectedRoute user={user}> <InjuryDetail user={user} /> </ProtectedRoute>
           } />
-        <Route path="/rom" element={<ROM />} />
+        <Route path="/rom/:id" element={<ROM user={user} />} />
       </Routes>
     </>
   )
