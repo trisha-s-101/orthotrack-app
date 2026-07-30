@@ -51,7 +51,7 @@ def analyzeVideo():
     return response
 
 def process_video(video_path):
-    angles = []
+    joint_measurements = []
     preview_image_b64 = None # We will store our Base64 image string here
 
     video = cv2.VideoCapture(video_path)
@@ -145,7 +145,7 @@ def process_video(video_path):
                     # Convert the raw bytes to a Base64 string that JSON can transport
                     preview_image_b64 = base64.b64encode(buffer).decode('utf-8')
 
-            # 3. Safely calculate specific target joint angles (e.g., Left Arm bicep curl angle)
+            # 3. Safely calculate specific target angles (e.g., Left Arm bicep curl angle)
             # This replaces the runaway loop counter completely to prevent IndexErrors
             try:
                 shoulder = landmarks[LEFT_SHOULDER]
@@ -158,11 +158,12 @@ def process_video(video_path):
                     wrist.visibility > min_confidence):
 
                     angle = calculate_angle(shoulder, elbow, wrist)
-                    angles.append({
+                    joint_measurements.append({
                     "frame": frame_count,
                     "timestamp": timestamp_ms,
                     "angle": angle
                     })
+                    angle_values = [entry["angle"] for entry in joint_measurements]
 
             except (IndexError, AttributeError):
                 pass
@@ -174,12 +175,39 @@ def process_video(video_path):
     video.release()
     detector.close() # <-- NEW: Destroy the detector to free up server RAM!
 
+    angles_np = np.array(angle_values)
+    smoothed_angles = []
+    max_angle = 0
+    min_angle = 0
+    average_angle = 0
+    range_of_motion = 0
+
+    if(len(angles_np) >0):
+        max_angle = float(np.max(angles_np))
+        min_angle = float(np.min(angles_np))
+        average_angle = float(np.average(angles_np))
+        range_of_motion = max_angle - min_angle 
+
+    if(len(angles_np) > 5):
+        #smoothing the angles using a rolling average for a more clear/accurate visualization
+        smoothed_angles = np.convolve(angles_np, np.ones(5)/5, mode='valid')
+    else:
+        smoothed_angles = angles_np
+
     # 2. Return a dictionary that Flask will serialize into JSON
+    
     return {
         "status": "success",
         "total_frames_processed": frame_count,
-        "angles": angles,
-        "preview_image": preview_image_b64
+        "joint_measurements": joint_measurements,
+        "preview_image": preview_image_b64,
+        "metrics": {
+            "max_angle": max_angle,
+            "min_angle": min_angle,
+            "average_angle": average_angle,
+            "range_of_motion": range_of_motion
+        },
+        "smoothed_angles": smoothed_angles.tolist()  # Convert to list for JSON
     }
 
 if __name__ == '__main__':

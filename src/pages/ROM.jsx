@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const ROM = ({ user }) => {
   const [video, setVideo] = useState(null); // stores the file the user selected
@@ -46,9 +47,15 @@ const ROM = ({ user }) => {
     setLoading(false);
   }
 
+  // Transform joint_measurements for the chart
+  const chartData = result?.joint_measurements?.map((measurement) => ({
+    frame: measurement.frame,
+    angle: Math.round(measurement.angle * 100) / 100, // Round to 2 decimals
+  })) || [];
+
   return (
     <div className="max-w-2xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">ROM Lab</h1>
+      <h1 className="text-3xl font-bold mb-6">ROM Analysis</h1>
 
       <p className="mb-6 text-gray-600">
         Upload a rehabilitation exercise video to test the ROM analysis pipeline.
@@ -90,13 +97,67 @@ const ROM = ({ user }) => {
           <div className="bg-white rounded-lg shadow p-4 mt-6">
             <h3 className="text-xl font-semibold mb-4">Frame-by-Frame Angles</h3>
             <div className="h-64 overflow-y-auto border rounded p-2">
-              {result.angles.map((entry) => (
+              {result.joint_measurements.map((entry) => (
                 <div key={entry.frame} className="border-b py-1 text-sm">
                   Frame {entry.frame} | {entry.timestamp} ms | {entry.angle.toFixed(1)}°
                 </div>
               ))}
             </div>
           </div> 
+
+          {result.metrics && (
+            <div className="bg-white rounded-lg shadow p-4 mt-6">
+              <h3 className="text-xl font-semibold mb-4">
+                Motion Analysis
+              </h3>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <strong>Maximum Angle</strong>
+                  <p>{result.metrics.max_angle.toFixed(1)}°</p>
+                </div>
+
+                <div>
+                  <strong>Minimum Angle</strong>
+                  <p>{result.metrics.min_angle.toFixed(1)}°</p>
+                </div>
+
+                <div>
+                  <strong>Range of Motion</strong>
+                  <p>{result.metrics.range_of_motion.toFixed(1)}°</p>
+                </div>
+
+                <div>
+                  <strong>Average Angle</strong>
+                  <p>{result.metrics.average_angle.toFixed(1)}°</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Chart */}
+          {chartData.length > 0 && (
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-xl font-semibold mb-4">Angle Over Time</h2>
+              <ResponsiveContainer width="100%" height={400}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="frame" label={{ value: "Frame", position: "insideBottomRight", offset: -5 }} />
+                  <YAxis label={{ value: "Angle (degrees)", angle: -90, position: "insideLeft" }} />
+                  <Tooltip formatter={(value) => `${value}°`} />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="angle"
+                    stroke="#3b82f6"
+                    dot={false}
+                    strokeWidth={2}
+                    name="Joint Angle"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
 
           <p className="mt-4">
             <strong>Frames Processed:</strong> {result.total_frames_processed}
