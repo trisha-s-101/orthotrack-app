@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 
-const ROM = ({user}) => {
-  const [video, setVideo] = useState(null); //stores the file the user selected
-  const [loading, setLoading] = useState(false); //controls what the button says (UI)
-  const [result, setResult] = useState(null); //stores the JOSN returned by Flask
-  const { id } = useParams() // Gets the injury ID from /rom/:id
+const ROM = ({ user }) => {
+  const [video, setVideo] = useState(null); // stores the file the user selected
+  const [loading, setLoading] = useState(false); // controls what the button says (UI)
+  const [result, setResult] = useState(null); // stores the JSON returned by Flask
+  const { id } = useParams(); // Gets the injury ID from /rom/:id
 
   async function handleAnalyze() {
     if (!video) {
@@ -13,35 +13,34 @@ const ROM = ({user}) => {
       return;
     }
 
-    console.log("Video file:", video); // Log the file
-    console.log("Attempting to fetch from: http://localhost:5001/analyze-rom"); // Log the URL
+    console.log("Video file:", video);
+    console.log("Attempting to fetch from: http://localhost:5001/analyze-rom");
 
     setLoading(true);
 
     const formData = new FormData();
     formData.append("video", video);
-    formData.append("injuryId", id)
+    formData.append("injuryId", id);
 
     try {
-        console.log("FormData prepared, sending request..."); // Log before fetch
-        const response = await fetch("http://localhost:5001/analyze-rom", {
-            method: "POST",
-            body: formData,
-        });
+      console.log("FormData prepared, sending request...");
+      const response = await fetch("http://localhost:5001/analyze-rom", {
+        method: "POST",
+        body: formData,
+      });
 
-        console.log("Response received:", response); // Log after fetch
+      console.log("Response received:", response);
 
-        if(!response.ok){
-            throw new Error(`HTTP Error! status: ${response.status}`)
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP Error! status: ${response.status}`);
+      }
 
-        const data = await response.json();
-        console.log("Data received: ", data)
-        setResult(data);
-    } 
-    catch (error) {
-        console.log("Fetch error:", error); // Log the actual error
-        alert("Failed to analyze video.");
+      const data = await response.json();
+      console.log("Data received: ", data);
+      setResult(data);
+    } catch (error) {
+      console.log("Fetch error:", error);
+      alert("Failed to analyze video.");
     }
 
     setLoading(false);
@@ -49,14 +48,10 @@ const ROM = ({user}) => {
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-
-      <h1 className="text-3xl font-bold mb-6">
-        ROM Lab
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">ROM Lab</h1>
 
       <p className="mb-6 text-gray-600">
-        Upload a rehabilitation exercise video to test the ROM analysis
-        pipeline.
+        Upload a rehabilitation exercise video to test the ROM analysis pipeline.
       </p>
 
       <input
@@ -78,33 +73,38 @@ const ROM = ({user}) => {
 
       {result && (
         <div className="mt-10 bg-gray-100 rounded-lg p-6">
-
-          <h2 className="text-xl font-semibold mb-4">
-            Results
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Results</h2>
 
           <p>
             <strong>Status:</strong> {result.status}°
           </p>
 
           <p>
-            <strong>Preview Image:</strong> 
-            <img src={`data:image/jpeg;base64,${result.preview_image}`} alt="Preview" />
+            <strong>Preview Image:</strong>
+            <img
+              src={`data:image/jpeg;base64,${result.preview_image}`}
+              alt="Preview"
+            />
           </p>
 
-          <p>
-            <strong>Angles:</strong> {result.angles}°
-          </p>
+          <div className="bg-white rounded-lg shadow p-4 mt-6">
+            <h3 className="text-xl font-semibold mb-4">Frame-by-Frame Angles</h3>
+            <div className="h-64 overflow-y-auto border rounded p-2">
+              {result.angles.map((entry) => (
+                <div key={entry.frame} className="border-b py-1 text-sm">
+                  Frame {entry.frame} | {entry.timestamp} ms | {entry.angle.toFixed(1)}°
+                </div>
+              ))}
+            </div>
+          </div> 
 
-          <p>
+          <p className="mt-4">
             <strong>Frames Processed:</strong> {result.total_frames_processed}
           </p>
-
         </div>
       )}
-
     </div>
-  );
+  ); 
 };
 
 export default ROM;

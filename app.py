@@ -158,11 +158,11 @@ def process_video(video_path):
                     wrist.visibility > min_confidence):
 
                     angle = calculate_angle(shoulder, elbow, wrist)
-                    angles.append([
-                        frame_count,
-                        timestamp_ms,
-                        angle
-                        ])
+                    angles.append({
+                    "frame": frame_count,
+                    "timestamp": timestamp_ms,
+                    "angle": angle
+                    })
 
             except (IndexError, AttributeError):
                 pass
