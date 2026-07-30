@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom"
 
-const ROM = () => {
+const ROM = ({user}) => {
   const [video, setVideo] = useState(null); //stores the file the user selected
   const [loading, setLoading] = useState(false); //controls what the button says (UI)
   const [result, setResult] = useState(null); //stores the JOSN returned by Flask
-  const { id } = useParams()
+  const { id } = useParams() // Gets the injury ID from /rom/:id
 
   async function handleAnalyze() {
     if (!video) {

@@ -15,15 +15,43 @@ import ROM from "./pages/ROM";
 function App() {
 
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true); // 1. Added loading state
 
   useEffect(() => {
+    // Check active session on initial load
   async function checkSession() {
     const { data } = await supabase.auth.getSession()
-    setUser(data.session?.user ?? null)
+    setUser(data.session?.user ?? null) 
+    setLoading(false)// Session check complete
   }
 
   checkSession()
-  }, [])
+
+  //2: Set up the ongoing event listener
+  const {data : {subscription}} = supabase.auth.onAuthStateChange(
+    (_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false)
+    }
+  );
+
+  //3: Clean up the listener when the component unmounts
+
+  return () => {
+    subscription.unsubscribe();
+  };
+  }, []);
+
+
+  //4. Block rendering until we KNOW if the user is loading or not
+
+  if(loading){
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-gray-500 font-medium">Loading session...</p>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -43,7 +71,9 @@ function App() {
           <ProtectedRoute user={user}> <Dashboard user={user} /> </ProtectedRoute>
           } />
         <Route path="/injuries/:id" element={
+          <>
           <ProtectedRoute user={user}> <InjuryDetail user={user} /> </ProtectedRoute>
+          </>
           } />
         <Route path="/rom/:id" element={<ROM user={user} />} />
       </Routes>
