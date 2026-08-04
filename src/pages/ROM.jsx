@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { supabase } from "../supabaseClient"
+
 
 const ROM = ({ user }) => {
   const [video, setVideo] = useState(null); // stores the file the user selected
@@ -15,18 +17,27 @@ const ROM = ({ user }) => {
     }
 
     console.log("Video file:", video);
-    console.log("Attempting to fetch from: http://localhost:5001/analyze-rom");
-
     setLoading(true);
+
+     // Get the current session's access token
+    const { data: { session } } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
 
     const formData = new FormData();
     formData.append("video", video);
-    formData.append("injuryId", id);
+    formData.append("injury_id", id);  
+    formData.append("joint", "left_elbow");  
 
     try {
       console.log("FormData prepared, sending request...");
+      console.log("Session:", session);
+      console.log("Access token:", accessToken);
+
       const response = await fetch("http://localhost:5001/analyze-rom", {
         method: "POST",
+        headers: {
+        "Authorization": `Bearer ${accessToken}`,  // Send the token
+        },
         body: formData,
       });
 
@@ -39,12 +50,14 @@ const ROM = ({ user }) => {
       const data = await response.json();
       console.log("Data received: ", data);
       setResult(data);
-    } catch (error) {
+    } 
+    
+    catch (error) {
       console.log("Fetch error:", error);
       alert("Failed to analyze video.");
     }
-
     setLoading(false);
+
   }
 
   // Transform joint_measurements for the chart
@@ -89,7 +102,7 @@ const ROM = ({ user }) => {
           <p>
             <strong>Preview Image:</strong>
             <img
-              src={`data:image/jpeg;base64,${result.preview_image}`}
+              src={`data:image/jpeg;base64,${result?.preview_image}`}
               alt="Preview"
             />
           </p>
@@ -97,7 +110,7 @@ const ROM = ({ user }) => {
           <div className="bg-white rounded-lg shadow p-4 mt-6">
             <h3 className="text-xl font-semibold mb-4">Frame-by-Frame Angles</h3>
             <div className="h-64 overflow-y-auto border rounded p-2">
-              {result.joint_measurements.map((entry) => (
+              {result?.joint_measurements?.map((entry) => (
                 <div key={entry.frame} className="border-b py-1 text-sm">
                   Frame {entry.frame} | {entry.timestamp} ms | {entry.angle.toFixed(1)}°
                 </div>
@@ -151,7 +164,7 @@ const ROM = ({ user }) => {
                     dataKey="angle"
                     stroke="#3b82f6"
                     dot={false}
-                    strokeWidth={2}
+                    strokeWidth={1}
                     name="Joint Angle"
                   />
                 </LineChart>

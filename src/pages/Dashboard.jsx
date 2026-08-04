@@ -4,7 +4,6 @@ import { supabase } from "../supabaseClient";
 import Navbar from "../components/Navbar";
 
 const Dashboard = ({ user }) => {
-    console.log("HERE");
 
     const navigate = useNavigate();
     const today = new Date().toISOString().split('T')[0];

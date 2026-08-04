@@ -10,11 +10,12 @@ from werkzeug.utils import secure_filename
 import os
 import tempfile 
 import base64
+from supabase_config import get_supabase
 
 app = Flask(__name__)
-CORS(app)  # Allows React frontend to call this Flask server
+CORS(app, resources={r"/analyze-rom": {"origins": "http://localhost:5173"}})
 
-# --- NEW: Read the model file into RAM once when the server starts ---
+# --- Read the model file into RAM once when the server starts ---
 MODEL_PATH = "./pose_landmarker_lite.task"
 with open(MODEL_PATH, "rb") as f:
     MODEL_BYTES = f.read()
@@ -22,36 +23,102 @@ with open(MODEL_PATH, "rb") as f:
 
 @app.route("/analyze-rom", methods=['POST'])
 def analyzeVideo():
+
+    auth_header = request.headers.get("Authorization")
+
+    print("Authorization:", auth_header)
+
+    if not auth_header:
+        return jsonify({"error": "No Authorization header"}), 401
+
+    if not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Invalid Authorization header"}), 401
+
+    access_token = auth_header.split(" ", 1)[1]
+
+    user_supabase = get_supabase(access_token)
+
+    try:
+        user_response = user_supabase.auth.get_user(access_token)
+        user = user_response.user
+
+        if user is None:
+            return jsonify({"error": "Invalid authentication token"}), 401
+
+        user_id = user.id
+
+    except Exception as e:
+        print("Authentication failed:", e)
+        return jsonify({"error": "Authentication failed"}), 401
+
     response_data = None
 
     if 'video' not in request.files:
         response_data = {'error': 'No video file provided'}
+        print("VIDEO IS NOT IN REQUEST.FILES")
     else:  # Save temporarily to disk
+        print("VIDEO IS IN REQUEST.FILES")
         file = request.files['video']  # 'video' is the field name, not the filename
+        injury_id = request.form.get('injury_id')
+        joint = request.form.get('joint', 'left_elbow')
+
         suffix = os.path.splitext(file.filename)[1]  # preserves .mp4, .mov etc
         temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
         os.close(temp_fd)  # close the file descriptor, we just need the path
     
         try:
+            print("GOING TO SAVE THE FILE")
             file.save(temp_path)
             # Run MediaPipe processing with the saved path
             response_data = process_video(temp_path)
+            # Save to Supabase
+            print("PROCESSING THE VIDEO WORKED")
+            session_data = {
+                "user_id": user_id,
+                "injury_id": injury_id,
+                "joint": joint,
+                "max_angle": response_data["metrics"]["max_angle"],
+                "min_angle": response_data["metrics"]["min_angle"],
+                "average_angle": response_data["metrics"]["average_angle"],
+                "range_of_motion": response_data["metrics"]["range_of_motion"],
+                "total_frames": response_data["total_frames_processed"],
+                "measurements": response_data["joint_measurements"],
+                "preview_image_base64": response_data["preview_image"]
+            }
+            
+            # Insert into Supabase
+            print("Session data being inserted:", session_data)
+
+            response = (
+            user_supabase
+            .table("rom_sessions")
+            .insert(session_data)
+            .execute()
+            )
+
+            print(response)
+
+            if response.data:
+                response_data["session_id"] = response.data[0]["id"]
+
         except Exception as e:
             print(f"ERROR in process video: {e}") # THIS LOGS TO FLASK TERMINAL
             response_data = {'error': str(e)}
+
         finally: #cleaning up temp files
             if os.path.exists(temp_path):
                 os.remove(temp_path)
 
     # Create response with explicit CORS headers
     response = jsonify(response_data)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    print("Final results being sent to React:", response)
     return response
 
 def process_video(video_path):
+
+    print("PROCESS VIDEO CALLED")
     joint_measurements = []
+    angle_values = []
     preview_image_b64 = None # We will store our Base64 image string here
 
     video = cv2.VideoCapture(video_path)
@@ -170,7 +237,6 @@ def process_video(video_path):
 
         # CRITICAL FIX: Increments out here so it runs regardless of detection success
         frame_count += 1
-    injury_id = request.form.get("injuryId")
 
     video.release()
     detector.close() # <-- NEW: Destroy the detector to free up server RAM!
