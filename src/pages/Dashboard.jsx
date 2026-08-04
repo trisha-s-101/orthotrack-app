@@ -91,6 +91,13 @@ const Dashboard = ({ user }) => {
         }
     }
 
+    function formatJoint(joint) {
+        return joint
+        .split("_")
+        .map(word => word[0].toUpperCase() + word.slice(1))
+        .join(" ");
+    }
+
     return (
         <>
             <div className="mx-50">
@@ -117,9 +124,9 @@ const Dashboard = ({ user }) => {
                                             {injury.injury_date}
                                         </p>
                                         <p>
-                                            <span className="font-medium">Affected Joint:</span>{" "}
-                                            {injury.joint}
+                                            <p>{formatJoint(injury.joint)}</p>
                                         </p>
+                                        
                                         <p>
                                             <span className="font-medium">Description:</span>{" "}
                                             {injury.description}
