@@ -10,7 +10,8 @@ const Dashboard = ({ user }) => {
 
     const [name, setName] = useState("");
     const [date, setDate] = useState(today);
-    const [bodyPart, setBodyPart] = useState("");
+    const [side, setSide] = useState("left");
+    const [joint, setJoint] = useState("elbow");
     const [description, setDescription] = useState("");
     const [injuriesList, setInjuriesList] = useState([]);
 
@@ -35,6 +36,7 @@ const Dashboard = ({ user }) => {
 
     async function addInjury(e) {
         e.preventDefault();
+        const affectedJoint = `${side}_${joint}`;
 
         const { data, error } = await supabase
             .from('injuries')
@@ -42,7 +44,7 @@ const Dashboard = ({ user }) => {
                 {
                     name: name,
                     injury_date: date,
-                    body_part: bodyPart,
+                    joint: affectedJoint,
                     description: description,
                     user_id: user.id  
                 }
@@ -115,8 +117,8 @@ const Dashboard = ({ user }) => {
                                             {injury.injury_date}
                                         </p>
                                         <p>
-                                            <span className="font-medium">Body Part:</span>{" "}
-                                            {injury.body_part}
+                                            <span className="font-medium">Affected Joint:</span>{" "}
+                                            {injury.joint}
                                         </p>
                                         <p>
                                             <span className="font-medium">Description:</span>{" "}
@@ -153,9 +155,47 @@ const Dashboard = ({ user }) => {
                     <label htmlFor="injury_date" className="form-label"> Injury Date </label>
                     <input type="date" id="injury_date" className="form-input" value={date} onChange={e=>setDate(e.target.value)} />
                     
-                    <label htmlFor="body_part" className="form-label"> Body Part</label>
-                    <input type="text" id="body_part" placeholder="Body Part" value={bodyPart} className="form-input" onChange={e=>setBodyPart(e.target.value)} />
-                    
+                    <div className="mt-4">
+                        <label className="block font-medium mb-2"> Affected Joint </label>
+
+                        {/* Left / Right */}
+                        <div className="flex gap-6 mb-4">
+                            <label className="flex items-center gap-2"> 
+                                <input
+                                type="radio"
+                                value="left"
+                                checked={side === "left"}
+                                onChange={(e) => setSide(e.target.value)}
+                                />
+                                Left
+                            </label>
+
+                            <label className="flex items-center gap-2">
+                                <input
+                                type="radio"
+                                value="right"
+                                checked={side === "right"}
+                                onChange={(e) => setSide(e.target.value)}
+                                />
+                                Right
+                            </label>
+                        </div>
+
+                        {/* Joint dropdown */}
+                        <select
+                        value={joint}
+                        onChange={(e) => setJoint(e.target.value)}
+                        className="w-full border rounded p-2"
+                        >
+                            <option value="shoulder">Shoulder</option>
+                            <option value="elbow">Elbow</option>
+                            <option value="hip">Hip</option>
+                            <option value="knee">Knee</option>
+                            <option value="ankle">Ankle</option>
+                        </select>
+
+                    </div>
+
                     <label htmlFor="description" className="form-label"> Description </label>
                     <input type="text" id="description" placeholder="Description" value={description} className="form-input" onChange={e=>setDescription(e.target.value)} />
                     
