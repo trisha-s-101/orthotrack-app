@@ -96,7 +96,18 @@ def analyzeVideo():
         print("VIDEO IS IN REQUEST.FILES")
         file = request.files['video']  # 'video' is the field name, not the filename
         injury_id = request.form.get('injury_id')
-        joint = request.form.get('joint', 'left_elbow')
+
+        # Look up the injury in Supabase
+        injury_response = (
+            user_supabase
+            .table("injuries")
+            .select("body_part")
+            .eq("id", injury_id)
+            .single()
+            .execute()
+        )
+
+        joint = injury_response["body_part"]
 
         suffix = os.path.splitext(file.filename)[1]  # preserves .mp4, .mov etc
         temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
