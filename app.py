@@ -19,6 +19,42 @@ CORS(app, resources={r"/analyze-rom": {"origins": "http://localhost:5173"}})
 MODEL_PATH = "./pose_landmarker_lite.task"
 with open(MODEL_PATH, "rb") as f:
     MODEL_BYTES = f.read()
+
+JOINT_CONFIG = {
+    "left_elbow": {
+        "landmarks": (11, 13, 15),   # shoulder, elbow, wrist
+        "display_name": "Left Elbow"
+    },
+    "right_elbow": {
+        "landmarks": (12, 14, 16),
+        "display_name": "Right Elbow"
+    },
+    "left_knee": {
+        "landmarks": (23, 25, 27),   # hip, knee, ankle
+        "display_name": "Left Knee"
+    },
+    "right_knee": {
+        "landmarks": (24, 26, 28),
+        "display_name": "Right Knee"
+    },
+    "left_shoulder": {
+        "landmarks": (13, 11, 23),   # elbow, shoulder, hip
+        "display_name": "Left Shoulder"
+    },
+    "right_shoulder": {
+        "landmarks": (14, 12, 24),
+        "display_name": "Right Shoulder"
+    },
+    "left_hip": {
+        "landmarks": (11, 23, 25),   # shoulder, hip, knee
+        "display_name": "Left Hip"
+    },
+    "right_hip": {
+        "landmarks": (12, 24, 26),
+        "display_name": "Right Hip"
+    }
+}
+
 # ---------------------------------------------------------------------
 
 @app.route("/analyze-rom", methods=['POST'])
@@ -70,7 +106,7 @@ def analyzeVideo():
             print("GOING TO SAVE THE FILE")
             file.save(temp_path)
             # Run MediaPipe processing with the saved path
-            response_data = process_video(temp_path)
+            response_data = process_video(temp_path, joint)
             # Save to Supabase
             print("PROCESSING THE VIDEO WORKED")
             session_data = {
@@ -114,9 +150,8 @@ def analyzeVideo():
     print("Final results being sent to React:", response)
     return response
 
-def process_video(video_path):
+def process_video(video_path, joint):
 
-    print("PROCESS VIDEO CALLED")
     joint_measurements = []
     angle_values = []
     preview_image_b64 = None # We will store our Base64 image string here
@@ -167,12 +202,12 @@ def process_video(video_path):
         fps = 30.0
 
     frame_count = 0
+    config = JOINT_CONFIG.get(joint)
 
-    # Reference MediaPipe pose landmarker constants for easier index readability
-    # Example: 11 = Left Shoulder, 13 = Left Elbow, 15 = Left Wrist
-    LEFT_SHOULDER = 11
-    LEFT_ELBOW = 13
-    LEFT_WRIST = 15
+    if config is None:
+        raise ValueError(f"Unsupported joint: {joint}")
+
+    LANDMARK_1, LANDMARK_2, LANDMARK_3 = config["landmarks"]
 
     while video.isOpened():
         success, frame = video.read()
@@ -197,7 +232,7 @@ def process_video(video_path):
             landmarks = result.pose_landmarks[0]
             # landmark_length = len(landmarks)
             # middle = int(landmark_length / 2)
-            preview_landmark = landmarks[LEFT_ELBOW]
+            preview_landmark = landmarks[LANDMARK_2]
 
             # 1. Draw tracking circles safely for the preview
             xcoordinate = int(preview_landmark.x * width)
@@ -215,16 +250,16 @@ def process_video(video_path):
             # 3. Safely calculate specific target angles (e.g., Left Arm bicep curl angle)
             # This replaces the runaway loop counter completely to prevent IndexErrors
             try:
-                shoulder = landmarks[LEFT_SHOULDER]
-                elbow = landmarks[LEFT_ELBOW]
-                wrist = landmarks[LEFT_WRIST]
+                landmark1 = landmarks[LANDMARK_1]
+                landmark2 = landmarks[LANDMARK_2]
+                landmark3 = landmarks[LANDMARK_3]   
 
                 min_confidence = 0.5
-                if (shoulder.visibility > min_confidence and 
-                    elbow.visibility > min_confidence and 
-                    wrist.visibility > min_confidence):
+                if (landmark1.visibility > min_confidence and 
+                    landmark2.visibility > min_confidence and 
+                    landmark3.visibility > min_confidence):
 
-                    angle = calculate_angle(shoulder, elbow, wrist)
+                    angle = calculate_angle(landmark1, landmark2, landmark3)
                     joint_measurements.append({
                     "frame": frame_count,
                     "timestamp": timestamp_ms,
@@ -263,7 +298,8 @@ def process_video(video_path):
     # 2. Return a dictionary that Flask will serialize into JSON
     
     return {
-        "status": "success",
+        "joint": joint,
+        "joint_name": config["display_name"],
         "total_frames_processed": frame_count,
         "joint_measurements": joint_measurements,
         "preview_image": preview_image_b64,

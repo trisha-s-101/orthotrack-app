@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { supabase } from "../supabaseClient"
+import PastSessions from "../components/PastSessions";
 
 
 const ROM = ({ user }) => {
@@ -26,7 +27,6 @@ const ROM = ({ user }) => {
     const formData = new FormData();
     formData.append("video", video);
     formData.append("injury_id", id);  
-    formData.append("joint", "left_elbow");  
 
     try {
       console.log("FormData prepared, sending request...");
@@ -68,10 +68,12 @@ const ROM = ({ user }) => {
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">ROM Analysis</h1>
+      <h1 className="text-3xl font-bold mb-2">
+        Range of Motion Analysis
+      </h1>
 
-      <p className="mb-6 text-gray-600">
-        Upload a rehabilitation exercise video to test the ROM analysis pipeline.
+      <p className="text-gray-500 mb-6">
+        Upload a rehabilitation exercise video and OrthoTrack will automatically identify the appropriate joint based on the selected injury.
       </p>
 
       <input
@@ -95,8 +97,26 @@ const ROM = ({ user }) => {
         <div className="mt-10 bg-gray-100 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Results</h2>
 
-          <p>
-            <strong>Status:</strong> {result.status}°
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+            <h2 className="text-xl font-semibold mb-2">
+              Range of Motion
+            </h2>
+
+            <p className="text-5xl font-bold text-blue-600">
+              {result.metrics.range_of_motion.toFixed(1)}°
+            </p>
+
+            <p className="text-gray-600 mt-2">
+              Calculated from your uploaded exercise video.
+            </p>
+          </div>
+
+          <p className="mb-4">
+            <strong>Joint analyzed:</strong>{" "}
+            {result.joint
+              .split("_")
+              .map(word => word[0].toUpperCase() + word.slice(1))
+              .join(" ")}
           </p>
 
           <p>
@@ -136,11 +156,6 @@ const ROM = ({ user }) => {
                 </div>
 
                 <div>
-                  <strong>Range of Motion</strong>
-                  <p>{result.metrics.range_of_motion.toFixed(1)}°</p>
-                </div>
-
-                <div>
                   <strong>Average Angle</strong>
                   <p>{result.metrics.average_angle.toFixed(1)}°</p>
                 </div>
@@ -177,6 +192,7 @@ const ROM = ({ user }) => {
           </p>
         </div>
       )}
+      <PastSessions injuryId={id} />
     </div>
   ); 
 };
