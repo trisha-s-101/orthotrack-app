@@ -58,7 +58,8 @@ const Dashboard = ({ user }) => {
             await getInjury();
             setName("");
             setDate(today);
-            setBodyPart("");
+            setSide("");
+            setJoint("")
             setDescription("");
         }
     }
@@ -124,7 +125,7 @@ const Dashboard = ({ user }) => {
                                             {injury.injury_date}
                                         </p>
                                         <p>
-                                            <p>{formatJoint(injury.joint)}</p>
+                                            <span>{formatJoint(injury.joint)}</span>
                                         </p>
                                         
                                         <p>

@@ -11,6 +11,7 @@ import os
 import tempfile 
 import base64
 from supabase_config import get_supabase
+import json
 
 app = Flask(__name__)
 CORS(app, resources={r"/analyze-rom": {"origins": "http://localhost:5173"}})
@@ -62,8 +63,6 @@ def analyzeVideo():
 
     auth_header = request.headers.get("Authorization")
 
-    print("Authorization:", auth_header)
-
     if not auth_header:
         return jsonify({"error": "No Authorization header"}), 401
 
@@ -71,7 +70,6 @@ def analyzeVideo():
         return jsonify({"error": "Invalid Authorization header"}), 401
 
     access_token = auth_header.split(" ", 1)[1]
-
     user_supabase = get_supabase(access_token)
 
     try:
@@ -91,9 +89,7 @@ def analyzeVideo():
 
     if 'video' not in request.files:
         response_data = {'error': 'No video file provided'}
-        print("VIDEO IS NOT IN REQUEST.FILES")
     else:  # Save temporarily to disk
-        print("VIDEO IS IN REQUEST.FILES")
         file = request.files['video']  # 'video' is the field name, not the filename
         injury_id = request.form.get('injury_id')
 
@@ -101,13 +97,15 @@ def analyzeVideo():
         injury_response = (
             user_supabase
             .table("injuries")
-            .select("body_part")
+            .select("joint")
             .eq("id", injury_id)
             .single()
             .execute()
         )
 
-        joint = injury_response["body_part"]
+        joint = injury_response.data.get("joint")
+        print("Joint/Injury Response: ", injury_response)
+        print("Type of Injury Response: ", type(injury_response))
 
         suffix = os.path.splitext(file.filename)[1]  # preserves .mp4, .mov etc
         temp_fd, temp_path = tempfile.mkstemp(suffix=suffix)
@@ -163,6 +161,7 @@ def analyzeVideo():
 
 def process_video(video_path, joint):
 
+    print("PROCESS VIDEO FUNCTION CALLED")
     joint_measurements = []
     angle_values = []
     preview_image_b64 = None # We will store our Base64 image string here

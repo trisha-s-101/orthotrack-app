@@ -16,8 +16,6 @@ const ROM = ({ user }) => {
       alert("Please choose a video first.");
       return;
     }
-
-    console.log("Video file:", video);
     setLoading(true);
 
      // Get the current session's access token
@@ -30,8 +28,6 @@ const ROM = ({ user }) => {
 
     try {
       console.log("FormData prepared, sending request...");
-      console.log("Session:", session);
-      console.log("Access token:", accessToken);
 
       const response = await fetch("http://localhost:5001/analyze-rom", {
         method: "POST",
@@ -57,7 +53,6 @@ const ROM = ({ user }) => {
       alert("Failed to analyze video.");
     }
     setLoading(false);
-
   }
 
   // Transform joint_measurements for the chart
@@ -103,7 +98,7 @@ const ROM = ({ user }) => {
             </h2>
 
             <p className="text-5xl font-bold text-blue-600">
-              {result.metrics.range_of_motion.toFixed(1)}°
+              {result?.metrics?.range_of_motion?.toFixed(1)}°
             </p>
 
             <p className="text-gray-600 mt-2">
@@ -113,10 +108,10 @@ const ROM = ({ user }) => {
 
           <p className="mb-4">
             <strong>Joint analyzed:</strong>{" "}
-            {result.joint
-              .split("_")
-              .map(word => word[0].toUpperCase() + word.slice(1))
-              .join(" ")}
+            {result?.joint
+            ?.split("_")
+            .map(word => word[0].toUpperCase() + word.slice(1))
+            .join(" ")}
           </p>
 
           <p>
