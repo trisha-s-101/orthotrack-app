@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { supabase } from "../supabaseClient"
 import PastSessions from "../components/PastSessions";
 import CurrentSessionCard from "../components/CurrentSessionCard";
+import ProgressComparison from "../components/ProgressComparison";
 
 
 const ROM = ({ user }) => {
@@ -100,26 +101,11 @@ const ROM = ({ user }) => {
         <div className="mt-10 bg-gray-100 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Results</h2>
             <div>
-            {/* <h2 className="text-xl font-semibold mb-2">
-              Range of Motion
-            </h2>
-
-            <p className="text-5xl font-bold text-blue-600">
-              {result?.metrics?.range_of_motion?.toFixed(1)}°
-            </p> */}
 
             <p className="text-gray-600 mt-2">
               Calculated from your uploaded exercise video.
             </p>
           </div>
-
-          {/* <p className="mb-4">
-            <strong>Joint analyzed:</strong>{" "}
-            {result?.joint
-            ?.split("_")
-            .map(word => word[0].toUpperCase() + word.slice(1))
-            .join(" ")}
-          </p> */}
 
           <p>
             <strong>Preview Image:</strong>
@@ -129,8 +115,11 @@ const ROM = ({ user }) => {
             />
           </p>
 
-
           <CurrentSessionCard result={result} />
+          <ProgressComparison
+          injuryId={id}
+          currentROM={result.metrics.range_of_motion}
+          />
 
           <div className="bg-white rounded-lg shadow p-4 mt-6">
             <h3 className="text-xl font-semibold mb-4">Frame-by-Frame Angles</h3>
