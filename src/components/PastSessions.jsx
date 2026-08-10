@@ -28,7 +28,7 @@ function PastSessions({ injuryId }) {
       {sessions.length === 0 ? (
         <p className="text-gray-500">No past sessions yet.</p>
       ) : (
-        <div className="space-y-4">
+        <div className="h-100 space-y-4 overflow-y-scroll">
           {sessions.map((session) => (
             <div key={session.id} className="bg-gray-50 p-4 rounded-lg border">
               <p className="text-sm text-gray-500">

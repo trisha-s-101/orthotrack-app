@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { supabase } from "../supabaseClient"
 import PastSessions from "../components/PastSessions";
+import CurrentSessionCard from "../components/CurrentSessionCard";
 
 
 const ROM = ({ user }) => {
@@ -56,10 +57,17 @@ const ROM = ({ user }) => {
   }
 
   // Transform joint_measurements for the chart
-  const chartData = result?.joint_measurements?.map((measurement) => ({
-    frame: measurement.frame,
-    angle: Math.round(measurement.angle * 100) / 100, // Round to 2 decimals
-  })) || [];
+  const chartData =
+  result?.joint_measurements
+    ?.filter(
+      (measurement) =>
+        measurement.timestamp != null &&
+        measurement.angle != null
+    )
+    .map((measurement) => ({
+      time: measurement.timestamp / 1000,
+      angle: Number(measurement.angle),
+    })) || [];
 
   return (
     <div className="max-w-2xl mx-auto p-8">
@@ -91,28 +99,27 @@ const ROM = ({ user }) => {
       {result && (
         <div className="mt-10 bg-gray-100 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Results</h2>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-2">
+            <div>
+            {/* <h2 className="text-xl font-semibold mb-2">
               Range of Motion
             </h2>
 
             <p className="text-5xl font-bold text-blue-600">
               {result?.metrics?.range_of_motion?.toFixed(1)}°
-            </p>
+            </p> */}
 
             <p className="text-gray-600 mt-2">
               Calculated from your uploaded exercise video.
             </p>
           </div>
 
-          <p className="mb-4">
+          {/* <p className="mb-4">
             <strong>Joint analyzed:</strong>{" "}
             {result?.joint
             ?.split("_")
             .map(word => word[0].toUpperCase() + word.slice(1))
             .join(" ")}
-          </p>
+          </p> */}
 
           <p>
             <strong>Preview Image:</strong>
@@ -121,6 +128,9 @@ const ROM = ({ user }) => {
               alt="Preview"
             />
           </p>
+
+
+          <CurrentSessionCard result={result} />
 
           <div className="bg-white rounded-lg shadow p-4 mt-6">
             <h3 className="text-xl font-semibold mb-4">Frame-by-Frame Angles</h3>
@@ -133,31 +143,6 @@ const ROM = ({ user }) => {
             </div>
           </div> 
 
-          {result.metrics && (
-            <div className="bg-white rounded-lg shadow p-4 mt-6">
-              <h3 className="text-xl font-semibold mb-4">
-                Motion Analysis
-              </h3>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <strong>Maximum Angle</strong>
-                  <p>{result.metrics.max_angle.toFixed(1)}°</p>
-                </div>
-
-                <div>
-                  <strong>Minimum Angle</strong>
-                  <p>{result.metrics.min_angle.toFixed(1)}°</p>
-                </div>
-
-                <div>
-                  <strong>Average Angle</strong>
-                  <p>{result.metrics.average_angle.toFixed(1)}°</p>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Chart */}
           {chartData.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-md">
@@ -165,17 +150,22 @@ const ROM = ({ user }) => {
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="frame" label={{ value: "Frame", position: "insideBottomRight", offset: -5 }} />
+                  <XAxis dataKey="time"
+                  label={{
+                    value: "Time (seconds)",
+                    position: "insideBottomRight",
+                    offset: -5,
+                  }}/>
                   <YAxis label={{ value: "Angle (degrees)", angle: -90, position: "insideLeft" }} />
                   <Tooltip formatter={(value) => `${value}°`} />
                   <Legend />
                   <Line
+                    name="Joint Angle"
                     type="monotone"
                     dataKey="angle"
                     stroke="#3b82f6"
                     dot={false}
                     strokeWidth={1}
-                    name="Joint Angle"
                   />
                 </LineChart>
               </ResponsiveContainer>

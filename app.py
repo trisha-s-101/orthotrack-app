@@ -273,6 +273,7 @@ def process_video(video_path, joint):
                     joint_measurements.append({
                     "frame": frame_count,
                     "timestamp": timestamp_ms,
+                    "time": round(timestamp_ms / 1000, 2),
                     "angle": angle
                     })
                     angle_values = [entry["angle"] for entry in joint_measurements]

@@ -15,6 +15,15 @@ const Dashboard = ({ user }) => {
     const [description, setDescription] = useState("");
     const [injuriesList, setInjuriesList] = useState([]);
 
+    const JOINTS = [
+    "shoulder",
+    "elbow",
+    "hip",
+    "knee",
+    "ankle"
+    ];
+
+
     async function getInjury() {
         const { data, error } = await supabase
             .from("injuries")
@@ -195,11 +204,13 @@ const Dashboard = ({ user }) => {
                         onChange={(e) => setJoint(e.target.value)}
                         className="w-full border rounded p-2"
                         >
-                            <option value="shoulder">Shoulder</option>
-                            <option value="elbow">Elbow</option>
-                            <option value="hip">Hip</option>
-                            <option value="knee">Knee</option>
-                            <option value="ankle">Ankle</option>
+
+                        {JOINTS.map(j => (
+                            <option key={j} value={j}>
+                                {j.charAt(0).toUpperCase() + j.slice(1)}
+                            </option>
+                        ))}
+
                         </select>
 
                     </div>
