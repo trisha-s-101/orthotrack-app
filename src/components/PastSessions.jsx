@@ -42,7 +42,7 @@ function PastSessions({ injuryId }) {
           No past sessions yet.
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 max-h-80 overflow-y-auto">
           {sessions.map((session) => {
             const isSelected = selectedSession?.id === session.id;
 

@@ -14,11 +14,13 @@ import { supabase } from "../supabaseClient";
 import PastSessions from "../components/PastSessions";
 import CurrentSessionCard from "../components/CurrentSessionCard";
 import ProgressComparison from "../components/ProgressComparison";
+import RecoveryProgressChart from "../components/RecoveryProgressChart";
 
 const ROM = ({ user }) => {
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [sessionRefreshKey, setSessionRefreshKey] = useState(0);
 
   const { id } = useParams();
 
@@ -64,6 +66,7 @@ const ROM = ({ user }) => {
       }
 
       const data = await response.json();
+      setSessionRefreshKey((previous) => previous + 1);
 
       console.log("Data received:", data);
 
@@ -75,25 +78,6 @@ const ROM = ({ user }) => {
       setLoading(false);
     }
   }
-
-  /*
-   * Convert the measurements returned by Flask into the format
-   * expected by Recharts.
-   *
-   * timestamp is returned in milliseconds, so we convert it
-   * to seconds for a more readable x-axis.
-   */
-  const chartData =
-    result?.joint_measurements
-      ?.filter(
-        (measurement) =>
-          measurement.timestamp != null &&
-          measurement.angle != null
-      )
-      .map((measurement) => ({
-        time: measurement.timestamp / 1000,
-        angle: Number(measurement.angle),
-      })) || [];
 
   return (
     <div className="max-w-4xl mx-auto p-8">
@@ -182,23 +166,7 @@ const ROM = ({ user }) => {
               <CurrentSessionCard result={result} />
             </div>
 
-            {/* Preview image */}
-
-            {result.preview_image && (
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Pose Detection Preview
-                </h3>
-
-                <img
-                  src={`data:image/jpeg;base64,${result.preview_image}`}
-                  alt="Pose detection preview"
-                  className="max-w-full rounded-lg"
-                />
-              </div>
-            )}
           </section>
-
 
           {/* =================================================
               3. RECOVERY PROGRESS
@@ -225,75 +193,15 @@ const ROM = ({ user }) => {
 
 
           {/* =================================================
-              4. WITHIN-SESSION ANGLE CHART
+              4.  ANGLE CHART
           ================================================== */}
 
-          {chartData.length > 0 && (
-            <section className="mb-10">
+          <RecoveryProgressChart
+          injuryId={id}
+          refreshKey={sessionRefreshKey}
+          />
 
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold">
-                  Movement Analysis
-                </h2>
-
-                <p className="text-sm text-gray-500">
-                  Joint angle throughout the uploaded exercise.
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-xl shadow-sm border">
-
-                <h3 className="text-lg font-semibold mb-4">
-                  Angle Over Time
-                </h3>
-
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={chartData}>
-
-                    <CartesianGrid strokeDasharray="3 3" />
-
-                    <XAxis
-                      dataKey="time"
-                      label={{
-                        value: "Time (seconds)",
-                        position: "insideBottomRight",
-                        offset: -5,
-                      }}
-                    />
-
-                    <YAxis
-                      label={{
-                        value: "Angle (degrees)",
-                        angle: -90,
-                        position: "insideLeft",
-                      }}
-                    />
-
-                    <Tooltip
-                      formatter={(value) => `${value.toFixed(1)}°`}
-                      labelFormatter={(value) =>
-                        `${Number(value).toFixed(2)} seconds`
-                      }
-                    />
-
-                    <Legend />
-
-                    <Line
-                      name="Joint Angle"
-                      type="monotone"
-                      dataKey="angle"
-                      stroke="#3b82f6"
-                      dot={false}
-                      strokeWidth={2}
-                    />
-
-                  </LineChart>
-                </ResponsiveContainer>
-
-              </div>
-            </section>
-          )}
-
+          <br></br>
 
           {/* =================================================
               5. SESSION HISTORY
@@ -315,55 +223,6 @@ const ROM = ({ user }) => {
             <PastSessions injuryId={id} />
 
           </section>
-
-
-          {/* =================================================
-              6. RAW FRAME DATA
-              Keep this available, but lower in the hierarchy.
-          ================================================== */}
-
-          <section className="mb-10">
-
-            <details className="bg-white rounded-xl border shadow-sm">
-
-              <summary className="cursor-pointer p-5 font-semibold">
-                View Frame-by-Frame Measurements
-              </summary>
-
-              <div className="p-5">
-
-                <div className="h-64 overflow-y-auto border rounded-lg p-2">
-
-                  {result.joint_measurements?.map((entry) => (
-                    <div
-                      key={entry.frame}
-                      className="border-b py-1 text-sm"
-                    >
-                      Frame {entry.frame} |{" "}
-                      {entry.timestamp} ms |{" "}
-                      {entry.angle.toFixed(1)}°
-                    </div>
-                  ))}
-
-                </div>
-
-              </div>
-
-            </details>
-
-          </section>
-
-
-          {/* =================================================
-              7. PROCESSING INFORMATION
-          ================================================== */}
-
-          <div className="text-sm text-gray-500 pb-8">
-            Frames processed:{" "}
-            <span className="font-medium">
-              {result.total_frames_processed}
-            </span>
-          </div>
 
         </>
       )}
