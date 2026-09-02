@@ -97,6 +97,14 @@ function SessionDetails({ session, onClose }) {
           </h2>
 
           <p className="text-gray-500 mt-1">
+            {session.exercise
+              ?.split("_")
+              .map(
+                (word) =>
+                  word.charAt(0).toUpperCase() + word.slice(1)
+              )
+              .join(" ") ?? "—"}
+            {" — "}
             {session.joint
               ?.split("_")
               .map(

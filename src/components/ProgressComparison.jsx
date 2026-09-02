@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 
-function ProgressComparison({ injuryId, currentROM }) {
+function ProgressComparison({ injuryId, exercise, currentROM }) {
 
   const [previousSession, setPreviousSession] = useState(null);
 
@@ -13,18 +13,21 @@ function ProgressComparison({ injuryId, currentROM }) {
         .from("rom_sessions")
         .select("*")
         .eq("injury_id", injuryId)
+        .eq("exercise", exercise)
         .order("session_date", { ascending: false })
         .limit(2);
 
       if (data && data.length >= 2) {
         setPreviousSession(data[1]);
+      } else {
+        setPreviousSession(null);
       }
 
     }
 
     loadPreviousSession();
 
-  }, [injuryId]);
+  }, [injuryId, exercise]);
 
   if (!previousSession)
     return null;

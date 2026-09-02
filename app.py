@@ -72,6 +72,15 @@ JOINT_CONFIG = {
 
 # ---------------------------------------------------------------------
 
+EXERCISE_CONFIG = {
+    "bicep_curl": {"joint_base": "elbow", "display_name": "Bicep Curl"},
+    "shoulder_abduction": {"joint_base": "shoulder", "display_name": "Shoulder Abduction"},
+    "knee_flexion": {"joint_base": "knee", "display_name": "Knee Flexion"},
+    "straight_leg_raise": {"joint_base": "hip", "display_name": "Straight Leg Raise"},
+}
+
+# ---------------------------------------------------------------------
+
 
 def count_repetitions(smoothed_angles, fps):
     if len(smoothed_angles) < 10:
@@ -139,10 +148,21 @@ def analyzeVideo():
     if 'video' not in request.files:
         response_data = {'error': 'No video file provided'}
     else:  # Save temporarily to disk
+        exercise = request.form.get('exercise')
+        side = request.form.get('side')
+
+        if exercise not in EXERCISE_CONFIG:
+            return jsonify({'error': f'Unsupported exercise: {exercise}'}), 400
+
+        if side not in ("left", "right"):
+            return jsonify({'error': f'Unsupported side: {side}'}), 400
+
         file = request.files['video']  # 'video' is the field name, not the filename
         injury_id = request.form.get('injury_id')
 
-        # Look up the injury in Supabase
+        # Look up the injury in Supabase -- this also doubles as an
+        # authorization check: RLS blocks the select (and .single() below
+        # raises) if injury_id doesn't belong to the authenticated user.
         injury_response = (
             user_supabase
             .table("injuries")
@@ -152,7 +172,10 @@ def analyzeVideo():
             .execute()
         )
 
-        joint = injury_response.data.get("joint")
+        # The joint to analyze is derived from the selected exercise + side,
+        # not from the injury's own (fixed-at-creation) joint field -- a
+        # single injury can be treated with different exercises over time.
+        joint = f"{side}_{EXERCISE_CONFIG[exercise]['joint_base']}"
         print("Joint/Injury Response: ", injury_response)
         print("Type of Injury Response: ", type(injury_response))
 
@@ -177,9 +200,10 @@ def analyzeVideo():
                 "range_of_motion": response_data["metrics"]["range_of_motion"],
                 "total_frames": response_data["total_frames_processed"],
                 "measurements": response_data["joint_measurements"],
-                "repetitions": response_data.get("repetitions", 0)
+                "repetitions": response_data.get("repetitions", 0),
+                "exercise": exercise
             }
-            
+
             # Insert into Supabase
             print("Session data being inserted:", session_data)
 
@@ -194,6 +218,10 @@ def analyzeVideo():
 
             if response.data:
                 response_data["session_id"] = response.data[0]["id"]
+
+            response_data["exercise"] = exercise
+            response_data["exercise_name"] = EXERCISE_CONFIG[exercise]["display_name"]
+            response_data["side"] = side
 
         except Exception as e:
             print(f"ERROR in process video: {e}") # THIS LOGS TO FLASK TERMINAL

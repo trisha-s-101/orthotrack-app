@@ -16,6 +16,10 @@ function ROMSummary({ result }) {
       </p>
 
       <p className="mt-4">
+        <strong>Exercise:</strong> {result.exercise_name} ({result.side})
+      </p>
+
+      <p className="mt-1">
         <strong>Joint analyzed:</strong>{" "}
         {result.joint
           ?.split("_")

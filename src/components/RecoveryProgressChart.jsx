@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { supabase } from "../supabaseClient";
 
-function RecoveryProgressChart({ injuryId, refreshKey }) {
+function RecoveryProgressChart({ injuryId, exercise, refreshKey }) {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,6 +24,7 @@ function RecoveryProgressChart({ injuryId, refreshKey }) {
         .from("rom_sessions")
         .select("id, session_date, range_of_motion")
         .eq("injury_id", injuryId)
+        .eq("exercise", exercise)
         .order("session_date", { ascending: true });
 
       if (error) {
@@ -37,7 +38,7 @@ function RecoveryProgressChart({ injuryId, refreshKey }) {
     }
 
     fetchSessions();
-  }, [injuryId, refreshKey]);
+  }, [injuryId, exercise, refreshKey]);
 
   const chartData = sessions
     .filter(

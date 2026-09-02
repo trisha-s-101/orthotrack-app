@@ -14,12 +14,19 @@ const ROM = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [sessionRefreshKey, setSessionRefreshKey] = useState(0);
+  const [exercise, setExercise] = useState("");
+  const [side, setSide] = useState("left");
 
   const { id } = useParams();
 
   async function handleAnalyze() {
     if (!video) {
       alert("Please choose a video first.");
+      return;
+    }
+
+    if (!exercise) {
+      alert("Please select an exercise first.");
       return;
     }
 
@@ -40,6 +47,8 @@ const ROM = ({ user }) => {
     const formData = new FormData();
     formData.append("video", video);
     formData.append("injury_id", id);
+    formData.append("exercise", exercise);
+    formData.append("side", side);
 
     try {
       console.log("FormData prepared, sending request...");
@@ -110,6 +119,10 @@ const ROM = ({ user }) => {
           setVideo={setVideo}
           loading={loading}
           handleAnalyze={handleAnalyze}
+          exercise={exercise}
+          setExercise={setExercise}
+          side={side}
+          setSide={setSide}
         />
       </div>
 
@@ -165,6 +178,7 @@ const ROM = ({ user }) => {
 
             <ProgressComparison
               injuryId={id}
+              exercise={result.exercise}
               currentROM={result.metrics.range_of_motion}
             />
 
@@ -177,6 +191,7 @@ const ROM = ({ user }) => {
 
           <RecoveryProgressChart
           injuryId={id}
+          exercise={result.exercise}
           refreshKey={sessionRefreshKey}
           />
 
