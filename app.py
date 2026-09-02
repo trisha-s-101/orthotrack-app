@@ -12,9 +12,23 @@ import tempfile
 import base64
 from supabase_config import get_supabase
 import json
+import scipy 
+from scipy.signal import find_peaks
+
 
 app = Flask(__name__)
-CORS(app, resources={r"/analyze-rom": {"origins": "http://localhost:5173"}})
+
+CORS(
+    app,
+    resources={
+        r"/analyze-rom": {
+            "origins": [
+                "http://localhost:5173",
+                "http://localhost:5174"
+            ]
+        }
+    }
+)
 
 # --- Read the model file into RAM once when the server starts ---
 MODEL_PATH = "./pose_landmarker_lite.task"
@@ -57,6 +71,41 @@ JOINT_CONFIG = {
 }
 
 # ---------------------------------------------------------------------
+
+
+def count_repetitions(smoothed_angles, fps):
+    if len(smoothed_angles) < 10:
+        return 0, []
+
+    # HEURISTIC (arbitrary engineering choice, not a validated clinical/
+    # biomechanical threshold): assume a rep takes at least 0.5 seconds,
+    # so peaks closer together than this are treated as one rep, not two.
+    min_distance_frames = int(fps * 0.5)
+
+    angle_range = np.max(smoothed_angles) - np.min(smoothed_angles)
+
+    # HEURISTIC: if the joint barely moved at all, treat it as "no
+    # repetitions" instead of letting find_peaks key off sub-degree
+    # tracking/numerical noise. 3.0 degrees is an arbitrary floor chosen
+    # to sit above normal tracking jitter (~0.5-1 deg) and below any real
+    # rep's range of motion -- not a clinically validated threshold.
+    MIN_MOVEMENT_RANGE_DEG = 3.0
+    if angle_range < MIN_MOVEMENT_RANGE_DEG:
+        return 0, []
+
+    # HEURISTIC: require peaks to stand out by at least 15% of the
+    # observed range (arbitrary engineering choice, not clinically
+    # validated) so this stays meaningful now that near-flat signals
+    # are already ruled out above.
+    min_prominence = angle_range * 0.15
+
+    peaks, properties = find_peaks(
+        smoothed_angles,
+        distance=min_distance_frames,
+        prominence=min_prominence
+    )
+
+    return len(peaks), peaks.tolist()
 
 @app.route("/analyze-rom", methods=['POST'])
 def analyzeVideo():
@@ -128,7 +177,7 @@ def analyzeVideo():
                 "range_of_motion": response_data["metrics"]["range_of_motion"],
                 "total_frames": response_data["total_frames_processed"],
                 "measurements": response_data["joint_measurements"],
-                "preview_image_base64": response_data["preview_image"]
+                "repetitions": response_data.get("repetitions", 0)
             }
             
             # Insert into Supabase
@@ -294,17 +343,21 @@ def process_video(video_path, joint):
     average_angle = 0
     range_of_motion = 0
 
-    if(len(angles_np) >0):
+    if(len(angles_np) > 0):
         max_angle = float(np.max(angles_np))
         min_angle = float(np.min(angles_np))
         average_angle = float(np.average(angles_np))
         range_of_motion = max_angle - min_angle 
 
-    if(len(angles_np) > 5):
+    if(len(angles_np) > 5): 
         #smoothing the angles using a rolling average for a more clear/accurate visualization
         smoothed_angles = np.convolve(angles_np, np.ones(5)/5, mode='valid')
     else:
         smoothed_angles = angles_np
+
+    #Repetition Counting feature
+    rep_count, peak_frames = count_repetitions(smoothed_angles, fps)
+    print("COUNT REPETITIONS WORKED")
 
     # 2. Return a dictionary that Flask will serialize into JSON
     
@@ -320,7 +373,9 @@ def process_video(video_path, joint):
             "average_angle": average_angle,
             "range_of_motion": range_of_motion
         },
-        "smoothed_angles": smoothed_angles.tolist()  # Convert to list for JSON
+        "smoothed_angles": smoothed_angles.tolist(),  # Convert to list for JSON
+        "repetitions": rep_count,          
+        "peak_frames": peak_frames         # useful for debugging/visualization
     }
 
 if __name__ == '__main__':

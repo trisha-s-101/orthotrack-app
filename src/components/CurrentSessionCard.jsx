@@ -14,7 +14,7 @@ function CurrentSessionCard({ result }) {
             Range of Motion
           </p>
 
-          <p className="text-5xl font-bold text-blue-600">
+          <p className="text-4xl font-bold text-blue-600">
             {result.metrics.range_of_motion.toFixed(1)}°
           </p>
         </div>
@@ -50,8 +50,19 @@ function CurrentSessionCard({ result }) {
           <p className="text-2xl font-semibold">
             {result.metrics.average_angle.toFixed(1)}°
           </p>
+
         </div>
 
+        <div>
+          <p className="text-gray-500 text-sm">
+            Repetitions (est.)
+          </p>
+
+          <p className="text-2xl font-semibold">
+            {result.repetitions}
+          </p>
+
+        </div>
       </div>
     </div>
   );

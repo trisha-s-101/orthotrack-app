@@ -115,7 +115,7 @@ function SessionDetails({ session, onClose }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
         <div className="bg-blue-50 rounded-lg p-4">
           <p className="text-sm text-gray-500">Range of Motion</p>
           <p className="text-2xl font-bold text-blue-600">
@@ -141,6 +141,13 @@ function SessionDetails({ session, onClose }) {
           <p className="text-sm text-gray-500">Minimum Angle</p>
           <p className="text-2xl font-bold">
             {Number(session.min_angle).toFixed(1)}°
+          </p>
+        </div>
+
+        <div className="bg-gray-50 rounded-lg p-4">
+          <p className="text-sm text-gray-500">Repetitions (est.)</p>
+          <p className="text-2xl font-bold">
+            {session.repetitions ?? "—"}
           </p>
         </div>
       </div>
