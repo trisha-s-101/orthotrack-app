@@ -1,20 +1,13 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import { supabase } from "../supabaseClient";
 import PastSessions from "../components/PastSessions";
-import CurrentSessionCard from "../components/CurrentSessionCard";
 import ProgressComparison from "../components/ProgressComparison";
 import RecoveryProgressChart from "../components/RecoveryProgressChart";
+import ROMUpload from "../components/ROMUpload";
+import ROMSummary from "../components/ROMSummary";
+import MotionAnalysis from "../components/MotionAnalysis";
+import ROMChart from "../components/ROMChart";
 
 const ROM = ({ user }) => {
   const [video, setVideo] = useState(null);
@@ -112,29 +105,12 @@ const ROM = ({ user }) => {
           Upload a video of the exercise you want to analyze.
         </p>
 
-        <input
-          type="file"
-          accept="video/*"
-          onChange={(e) => setVideo(e.target.files[0])}
-          className="mb-5 block w-full"
+        <ROMUpload
+          video={video}
+          setVideo={setVideo}
+          loading={loading}
+          handleAnalyze={handleAnalyze}
         />
-
-        {video && (
-          <p className="text-sm text-gray-600 mb-4">
-            Selected video:{" "}
-            <span className="font-medium">{video.name}</span>
-          </p>
-        )}
-
-        <button
-          onClick={handleAnalyze}
-          disabled={loading}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg
-                     hover:bg-blue-700 disabled:bg-gray-400
-                     transition"
-        >
-          {loading ? "Analyzing..." : "Analyze Video"}
-        </button>
       </div>
 
 
@@ -162,9 +138,12 @@ const ROM = ({ user }) => {
               </div>
             </div>
 
-            <div className="mb-6">
-              <CurrentSessionCard result={result} />
-            </div>
+            <ROMSummary result={result} />
+            <MotionAnalysis
+              metrics={result.metrics}
+              repetitions={result.repetitions}
+            />
+            <ROMChart measurements={result.joint_measurements} />
 
           </section>
 
