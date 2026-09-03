@@ -26,6 +26,10 @@ function ROMSummary({ result }) {
           .map(word => word[0].toUpperCase() + word.slice(1))
           .join(" ")}
       </p>
+
+      <p className="text-xs text-gray-400 mt-4">
+        This measurement is for personal tracking only. It does not constitute medical advice.
+      </p>
     </div>
   );
 }
