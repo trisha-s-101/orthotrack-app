@@ -58,10 +58,10 @@ function App() {
       <Navbar user={user} setUser={setUser} />
       <Routes>
         <Route path="/" element={
+
           <>
             <Hero />
             <FeatureSection />
-            <Footer />
           </>
         }>
         </Route>
@@ -77,6 +77,7 @@ function App() {
           } />
         <Route path="/rom/:id" element={<ROM user={user} />} />
       </Routes>
+      <Footer />
     </>
   )
 }
