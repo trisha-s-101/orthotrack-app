@@ -16,6 +16,7 @@ const ROM = ({ user }) => {
   const [sessionRefreshKey, setSessionRefreshKey] = useState(0);
   const [exercise, setExercise] = useState("");
   const [side, setSide] = useState("left");
+  const [notes, setNotes] = useState("");
 
   const { id } = useParams();
 
@@ -49,6 +50,7 @@ const ROM = ({ user }) => {
     formData.append("injury_id", id);
     formData.append("exercise", exercise);
     formData.append("side", side);
+    formData.append("notes", notes);
 
     try {
       console.log("FormData prepared, sending request...");
@@ -123,6 +125,8 @@ const ROM = ({ user }) => {
           setExercise={setExercise}
           side={side}
           setSide={setSide}
+          notes={notes}
+          setNotes={setNotes}
         />
       </div>
 

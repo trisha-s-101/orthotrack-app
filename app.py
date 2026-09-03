@@ -150,6 +150,7 @@ def analyzeVideo():
     else:  # Save temporarily to disk
         exercise = request.form.get('exercise')
         side = request.form.get('side')
+        notes = request.form.get('notes', '') or None
 
         if exercise not in EXERCISE_CONFIG:
             return jsonify({'error': f'Unsupported exercise: {exercise}'}), 400
@@ -201,7 +202,8 @@ def analyzeVideo():
                 "total_frames": response_data["total_frames_processed"],
                 "measurements": response_data["joint_measurements"],
                 "repetitions": response_data.get("repetitions", 0),
-                "exercise": exercise
+                "exercise": exercise,
+                "notes": notes
             }
 
             # Insert into Supabase
