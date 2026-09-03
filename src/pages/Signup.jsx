@@ -7,6 +7,7 @@ const Signup = ({setUser}) => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [acknowledged, setAcknowledged] = useState(false)
     const navigate = useNavigate()
 
   async function handleSignUp(e) {
@@ -37,7 +38,22 @@ const Signup = ({setUser}) => {
               <input className="form-input" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
               <label htmlFor="password" className="form-label"> Password </label>
               <input className="form-input" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
-              <button type="submit" className="primary-button" > Submit </button>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 text-sm text-gray-600">
+                <p className="font-semibold mb-1">Before you continue</p>
+                <p>OrthoTrack measures changes in your personal range of motion over time. It does not diagnose injuries, predict recovery timelines, or replace guidance from your physician or physical therapist.</p>
+              </div>
+
+              <label className="flex items-start gap-3 mt-4 text-sm text-gray-700 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 shrink-0"
+                  checked={acknowledged}
+                  onChange={(e) => setAcknowledged(e.target.checked)}
+                />
+                I understand OrthoTrack is not a medical device and does not replace professional medical advice.
+              </label>
+
+              <button type="submit" disabled={!acknowledged} className="primary-button disabled:opacity-50 disabled:cursor-not-allowed"> Submit </button>
           </form>
       </div>
     </>)
