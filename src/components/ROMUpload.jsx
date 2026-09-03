@@ -14,6 +14,8 @@ function ROMUpload({
   setExercise,
   side,
   setSide,
+  notes,
+  setNotes
 }) {
   return (
     <>
@@ -75,6 +77,18 @@ function ROMUpload({
           <span className="font-medium">{video.name}</span>
         </p>
       )}
+
+      <label className="block text-sm font-medium text-gray-700 mb-1 mt-5">
+        Notes <span className="text-gray-400 font-normal">(optional)</span>
+      </label>
+
+      <textarea
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        placeholder="e.g. First day without brace. More pain than usual."
+        rows={3}
+        className="mb-5 block w-full border rounded-lg p-2 text-sm resize-none"
+      />
 
       <button
         onClick={handleAnalyze}

@@ -66,6 +66,14 @@ function PastSessions({ injuryId }) {
                       {formatDate(session.session_date)}
                     </p>
 
+                    {session.notes && (
+                      <p className="text-xs text-gray-400 mt-1 italic">
+                        "{session.notes.length > 60
+                          ? session.notes.slice(0, 60) + "…"
+                          : session.notes}"
+                      </p>
+                    )}
+
                     <p className="font-semibold mt-1">
                       {session.exercise
                         ?.split("_")

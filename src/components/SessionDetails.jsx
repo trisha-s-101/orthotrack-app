@@ -174,6 +174,15 @@ function SessionDetails({ session, onClose }) {
         </div>
       )}
 
+      {session.notes && (
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold mb-2">Session Notes</h3>
+          <p className="text-gray-700 bg-gray-50 rounded-lg p-4 text-sm whitespace-pre-wrap">
+            {session.notes}
+          </p>
+        </div>
+      )}
+
       {chartData.length > 0 && (
         <div className="mb-8">
           <h3 className="text-lg font-semibold mb-3">
