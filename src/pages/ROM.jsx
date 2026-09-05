@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import PastSessions from "../components/PastSessions";
@@ -8,6 +8,7 @@ import ROMUpload from "../components/ROMUpload";
 import ROMSummary from "../components/ROMSummary";
 import MotionAnalysis from "../components/MotionAnalysis";
 import ROMChart from "../components/ROMChart";
+import ROMGoal from "../components/ROMGoal";
 
 const ROM = ({ user }) => {
   const [video, setVideo] = useState(null);
@@ -17,6 +18,7 @@ const ROM = ({ user }) => {
   const [exercise, setExercise] = useState("");
   const [side, setSide] = useState("left");
   const [notes, setNotes] = useState("");
+  const [targetRom, setTargetRom] = useState(null);
 
   const { id } = useParams();
 
@@ -53,8 +55,6 @@ const ROM = ({ user }) => {
     formData.append("notes", notes);
 
     try {
-      console.log("FormData prepared, sending request...");
-
       const response = await fetch("http://localhost:5001/analyze-rom", {
         method: "POST",
         headers: {
@@ -63,8 +63,6 @@ const ROM = ({ user }) => {
         body: formData,
       });
 
-      console.log("Response received:", response);
-
       if (!response.ok) {
         throw new Error(`HTTP Error! status: ${response.status}`);
       }
@@ -72,15 +70,54 @@ const ROM = ({ user }) => {
       const data = await response.json();
       setSessionRefreshKey((previous) => previous + 1);
 
-      console.log("Data received:", data);
-
       setResult(data);
+
     } catch (error) {
       console.log("Fetch error:", error);
       alert("Failed to analyze video.");
     } finally {
       setLoading(false);
     }
+  }
+
+  useEffect(() => {
+    if (!exercise) return;
+
+    async function fetchGoal() {
+      const { data, error } = await supabase
+        .from("goals")
+        .select("*")
+        .eq("injury_id", id)
+        .eq("exercise", exercise)
+        .limit(1);
+
+      if (data && data[0]) {
+        setTargetRom(data[0].target_rom);
+      } else {
+        setTargetRom(null);
+      }
+    }
+
+    fetchGoal();
+  }, [id, exercise])
+
+  async function handleTargetSave(value){
+    value = parseFloat(value);
+    if (isNaN(value) || value <= 0) return;
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const user_id = session?.user?.id;
+
+    const {data, error} = await supabase
+      .from("goals")
+      .upsert(
+        {user_id, injury_id: id, exercise, target_rom: value},
+        { onConflict: "injury_id,exercise" }
+        // update if row exists, otherwise insert
+      )
+
+    setTargetRom(value)
+    
   }
 
   return (
@@ -130,6 +167,12 @@ const ROM = ({ user }) => {
         />
       </div>
 
+      <ROMGoal
+        targetRom={targetRom}
+        currentROM={result?.metrics.range_of_motion ?? null}
+        exercise={exercise}
+        onTargetSave={handleTargetSave}
+      />
 
       {/* =====================================================
           RESULTS
