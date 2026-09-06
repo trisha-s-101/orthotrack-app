@@ -17,11 +17,30 @@ const InjuryDetail = ({ user }) => {
   const [summary, setSummary] = useState(null)
   const [generatingHandoff, setGeneratingHandoff] = useState(false)
   const [showSummaryModal, setShowSummaryModal] = useState(false)
+  const [romSessions, setRomSessions] = useState([])
 
   useEffect(() => {
     fetchInjury()
     fetchEvents()
   }, [id])
+
+  useEffect(() => {
+    if (!injury) return
+
+    async function fetchRomSessions() {
+      const { data, error } = await supabase
+        .from('rom_sessions')
+        .select("*")
+        .eq('injury_id', injury.id)
+        .order('session_date', { ascending: true })
+
+      if (data) {
+        setRomSessions(data)
+      }
+    }
+
+    fetchRomSessions()
+  }, [injury])
 
   async function fetchInjury() {
     const { data, error } = await supabase
@@ -98,8 +117,9 @@ const InjuryDetail = ({ user }) => {
   }
 
   function serializeForSummary() {
+    const jointDisplay = injury.joint?.split("_").map(w => w[0].toUpperCase() + w.slice(1)).join(" ") ?? "Unknown"
     let summary = `INJURY: ${injury.name}\n`
-    summary += `Body Part: ${injury.body_part}\n`
+    summary += `Joint: ${jointDisplay}\n`
     summary += `Date of Injury: ${injury.injury_date}\n`
     summary += `Description: ${injury.description || 'None'}\n\n`
     
@@ -110,6 +130,19 @@ const InjuryDetail = ({ user }) => {
         summary += `  Notes: ${event.notes}\n`
       }
     })
+
+    if (romSessions.length > 0) {
+      summary += `\nROM SESSIONS:\n`
+      for (const session of romSessions) {
+        const exerciseDisplayName = session.exercise?.split("_").map(w => w[0].toUpperCase() + w.slice(1)).join(" ") ?? "Unknown exercise"
+        const side = session.joint?.split("_")[0] ?? ""
+        let line = `[${session.session_date}] ${exerciseDisplayName}${side ? ` (${side})` : ""} — ROM: ${session.range_of_motion}°, Reps: ${session.repetitions ?? 'N/A'}`
+        if (session.notes) {
+          line += `, Notes: "${session.notes}"`
+        }
+        summary += line + '\n'
+      }
+    }
     
     return summary
   }
@@ -119,7 +152,23 @@ const InjuryDetail = ({ user }) => {
 
     try{
       const injuryData = serializeForSummary()
-      const systemPrompt = "You are a clinical documentation specialist.  Given a patient's injury recovery timeline, generate a concise 2-3 paragraph handoff summary  suitable for sharing with a new orthopedic provider or physical therapist.  Include: current injury status, key treatment milestones, current functional limitations (if any), major interventions, current status if inferable, and any notable gaps or follow-up considerations. Do not invent facts. Keep it professional and factual."
+      const systemPrompt = 
+      `
+      You are a clinical documentation assistant helping summarize a patient's orthopedic 
+      recovery. You will be given a timeline of recovery events and a log of measured range 
+      of motion (ROM) sessions.
+
+      Write a 2-3 paragraph summary that:
+      - Describes the ROM trend over time (improving, plateauing, any regressions)
+      - Notes any correlation between timeline events and changes in ROM 
+        (e.g. ROM improved after PT started, or decreased around a noted pain flare)
+      - References the patient's own session notes where relevant
+      - Does not diagnose, predict outcomes, or compare to clinical norms
+      - Ends with: "This summary is based on your personal recorded data and is not a 
+        medical assessment."
+      Only state what the data shows. Do not invent or infer facts not present in the data.
+      `
+
       const fullPrompt = `${systemPrompt}\n\nPATIENT DATA:\n${injuryData}`
       console.log(fullPrompt) 
       const result = await generateHandoffSummary(fullPrompt)
@@ -171,7 +220,7 @@ const InjuryDetail = ({ user }) => {
           <strong>Date:</strong> {injury.injury_date}
         </p>
         <p className="text-gray-600 mb-1">
-          <strong>Body Part:</strong> {injury.body_part}
+          <strong>Joint:</strong> {injury.joint?.split("_").map(w => w[0].toUpperCase() + w.slice(1)).join(" ") ?? "—"}
         </p>
         {injury.description && (
           <p className="text-gray-600">
