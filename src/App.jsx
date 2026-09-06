@@ -75,7 +75,9 @@ function App() {
           <ProtectedRoute user={user}> <InjuryDetail user={user} /> </ProtectedRoute>
           </>
           } />
-        <Route path="/rom/:id" element={<ROM user={user} />} />
+        <Route path="/rom/:id" element={
+          <ProtectedRoute user={user}><ROM user={user} /></ProtectedRoute>
+        } />
       </Routes>
       <Footer />
     </>
