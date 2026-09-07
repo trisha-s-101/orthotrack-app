@@ -18,6 +18,8 @@ const InjuryDetail = ({ user }) => {
   const [generatingHandoff, setGeneratingHandoff] = useState(false)
   const [showSummaryModal, setShowSummaryModal] = useState(false)
   const [romSessions, setRomSessions] = useState([])
+  const [expandedEventId, setExpandedEventId] = useState(null)
+  const [showAddForm, setShowAddForm] = useState(false)
 
   useEffect(() => {
     fetchInjury()
@@ -238,48 +240,23 @@ const InjuryDetail = ({ user }) => {
 
       {/* Timeline */}
       <section className="mb-10">
-        <h2 className="text-2xl font-bold mb-6">Timeline</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Timeline</h2>
+          <button
+            onClick={() => { setShowAddForm(f => !f); setEditingEvent(null) }}
+            className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium"
+          >
+            {showAddForm ? "Cancel" : "+ Add Event"}
+          </button>
+        </div>
 
-        {events.length === 0 ? (
-          <p className="text-gray-500 mb-6">No events yet. Add one below.</p>
-        ) : (
-          <div className="space-y-3 mb-8">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-blue-500 p-5"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900">{event.title}</h3>
-                    <p className="text-xs text-gray-400 mt-0.5 capitalize">
-                      {event.event_date} · {event.type}
-                    </p>
-                    {event.notes && (
-                      <p className="text-gray-600 text-sm mt-2">{event.notes}</p>
-                    )}
-                    {event.document_url && (
-                      <div className="flex items-center gap-3 mt-2">
-                        <a href={event.document_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
-                          📄 {event.document_name}
-                        </a>
-                        <button onClick={() => deleteDocument(event.id, event.document_url)} className="text-red-500 hover:text-red-700 text-xs">
-                          Remove
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button onClick={() => setEditingEvent(event)} className="text-xs border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50">
-                      Edit
-                    </button>
-                    <button onClick={() => deleteEvent(event.id)} className="text-xs border border-red-200 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-50">
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+        {showAddForm && (
+          <div className="mb-6">
+            <TimelineEventsForm
+              injuryId={id}
+              user={user}
+              onEventCreated={() => { fetchEvents(); setShowAddForm(false) }}
+            />
           </div>
         )}
 
@@ -295,7 +272,66 @@ const InjuryDetail = ({ user }) => {
           </div>
         )}
 
-        <TimelineEventsForm injuryId={id} user={user} onEventCreated={fetchEvents} />
+        {events.length === 0 ? (
+          <p className="text-gray-500">No events yet.</p>
+        ) : (
+          <div className="space-y-2">
+            {events.map((event) => {
+              const isExpanded = expandedEventId === event.id
+              return (
+                <div
+                  key={event.id}
+                  className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-blue-500 overflow-hidden"
+                >
+                  {/* Collapsed row — always visible */}
+                  <button
+                    onClick={() => setExpandedEventId(isExpanded ? null : event.id)}
+                    className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-gray-900 text-sm">{event.title}</span>
+                      <span className="text-xs text-gray-400 ml-3 capitalize">{event.event_date} · {event.type}</span>
+                    </div>
+                    <span className="text-gray-400 text-xs ml-3">{isExpanded ? "▲" : "▼"}</span>
+                  </button>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <div className="px-5 pb-4 border-t border-gray-100">
+                      {event.notes && (
+                        <p className="text-gray-600 text-sm mt-3">{event.notes}</p>
+                      )}
+                      {event.document_url && (
+                        <div className="flex items-center gap-3 mt-3">
+                          <a href={event.document_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-sm">
+                            📄 {event.document_name}
+                          </a>
+                          <button onClick={() => deleteDocument(event.id, event.document_url)} className="text-red-500 hover:text-red-700 text-xs">
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                      <div className="flex gap-2 mt-4">
+                        <button
+                          onClick={() => { setEditingEvent(event); setShowAddForm(false); setExpandedEventId(null) }}
+                          className="text-xs border border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => deleteEvent(event.id)}
+                          className="text-xs border border-red-200 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-50"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       {/* Handoff summary */}
