@@ -215,7 +215,12 @@ const InjuryDetail = ({ user }) => {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8">
-      <Link to="/dashboard" className="text-blue-600 hover:underline mb-4 block"> ← Back to Dashboard </Link>
+      <div className="flex items-center justify-between mb-4">
+        <Link to="/dashboard" className="text-blue-600 hover:underline"> ← Back to Dashboard </Link>
+        <Link to={`/rom/${id}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium">
+          Track ROM →
+        </Link>
+      </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <h1 className="text-3xl font-bold mb-2">{injury.name}</h1>

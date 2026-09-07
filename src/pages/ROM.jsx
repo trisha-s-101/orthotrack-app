@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import PastSessions from "../components/PastSessions";
 import ProgressComparison from "../components/ProgressComparison";
@@ -126,6 +126,15 @@ const ROM = ({ user }) => {
       {/* =====================================================
           PAGE HEADER
       ====================================================== */}
+
+      <div className="flex items-center justify-between mb-6">
+        <Link to={`/injuries/${id}`} className="text-blue-600 hover:underline text-sm">
+          ← View Timeline
+        </Link>
+        <Link to="/dashboard" className="text-gray-500 hover:text-gray-700 text-sm">
+          Dashboard
+        </Link>
+      </div>
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
