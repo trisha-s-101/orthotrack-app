@@ -80,10 +80,13 @@ const TimelineEventsForm = ({ injuryId, user, onEventCreated }) => {
           className="w-full border border-gray-300 rounded-lg px-3 py-2"
         >
           <option value="note">Note</option>
+          <option value="injury">Injury</option>
           <option value="surgery">Surgery</option>
           <option value="appointment">Appointment</option>
-          <option value="PT">Physical Therapy</option>
+          <option value="pt">Physical Therapy</option>
           <option value="imaging">Imaging</option>
+          <option value="milestone">Milestone</option>
+          <option value="setback">Setback</option>
         </select>
       </div>
 
