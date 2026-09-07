@@ -9,7 +9,7 @@ const Signup = ({setUser}) => {
     const [password, setPassword] = useState("")
     const [acknowledged, setAcknowledged] = useState(false)
     const [error, setError] = useState("")
-    const navigate = useNavigate()
+    const [submitted, setSubmitted] = useState(false)
 
   async function handleSignUp(e) {
     e.preventDefault()
@@ -22,12 +22,29 @@ const Signup = ({setUser}) => {
 
     if (authError) {
       setError(authError.message)
+    } else if (data.user?.identities?.length === 0) {
+      setError("An account with this email already exists. Try signing in instead.")
     } else {
-      setUser(data.user);
-      setEmail("")
-      setPassword("")
-      navigate("/dashboard")
+      setSubmitted(true)
     }
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
+          <div className="text-4xl mb-4">📬</div>
+          <h1 className="text-2xl font-bold mb-2">Check your email</h1>
+          <p className="text-gray-600 mb-6">
+            We sent a confirmation link to <span className="font-medium">{email}</span>.
+            Click it to activate your account, then sign in.
+          </p>
+          <Link to="/login" className="text-blue-600 hover:underline text-sm">
+            Go to Sign In
+          </Link>
+        </div>
+      </div>
+    )
   }
 
     return (
