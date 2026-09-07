@@ -15,6 +15,7 @@ const Dashboard = ({ user }) => {
     const [joint, setJoint] = useState("elbow");
     const [description, setDescription] = useState("");
     const [injuriesList, setInjuriesList] = useState([]);
+    const [showForm, setShowForm] = useState(false);
 
     const JOINTS = [
     "shoulder",
@@ -68,9 +69,10 @@ const Dashboard = ({ user }) => {
             await getInjury();
             setName("");
             setDate(today);
-            setSide("");
-            setJoint("")
+            setSide("left");
+            setJoint("elbow");
             setDescription("");
+            setShowForm(false);
         }
     }
 
@@ -171,61 +173,61 @@ const Dashboard = ({ user }) => {
                     )}                   
                 </div>
 
-                <form onSubmit={addInjury} className="bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-5 mt-20">
-                    <label htmlFor="name" className="form-label"> Name </label>
-                    <input type="text" id="name" placeholder="Name" className="form-input" value={name} onChange={e=>setName(e.target.value)} />
-                    
-                    <label htmlFor="injury_date" className="form-label"> Injury Date </label>
-                    <input type="date" id="injury_date" className="form-input" value={date} onChange={e=>setDate(e.target.value)} />
-                    
-                    <div className="mt-4">
-                        <label className="block font-medium mb-2"> Affected Joint </label>
-
-                        {/* Left / Right */}
-                        <div className="flex gap-6 mb-4">
-                            <label className="flex items-center gap-2"> 
-                                <input
-                                type="radio"
-                                value="left"
-                                checked={side === "left"}
-                                onChange={(e) => setSide(e.target.value)}
-                                />
-                                Left
-                            </label>
-
-                            <label className="flex items-center gap-2">
-                                <input
-                                type="radio"
-                                value="right"
-                                checked={side === "right"}
-                                onChange={(e) => setSide(e.target.value)}
-                                />
-                                Right
-                            </label>
+                <div className="mt-8">
+                    {!showForm ? (
+                        <div className="flex justify-center">
+                            <button
+                                onClick={() => setShowForm(true)}
+                                className="bg-blue-600 text-white px-10 py-4 rounded-xl hover:bg-blue-700 transition-colors font-semibold text-lg mb-5"
+                            >
+                                + Add Injury
+                            </button>
                         </div>
+                    ) : (
+                        <form onSubmit={addInjury} className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 flex flex-col gap-5">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-semibold">Add Injury</h2>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowForm(false)}
+                                    className="text-gray-400 hover:text-gray-700 text-sm"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
 
-                        {/* Joint dropdown */}
-                        <select
-                        value={joint}
-                        onChange={(e) => setJoint(e.target.value)}
-                        className="w-full border rounded p-2"
-                        >
+                            <label htmlFor="name" className="form-label"> Name </label>
+                            <input type="text" id="name" placeholder="e.g. Left ACL Tear" className="form-input" value={name} onChange={e=>setName(e.target.value)} />
 
-                        {JOINTS.map(j => (
-                            <option key={j} value={j}>
-                                {j.charAt(0).toUpperCase() + j.slice(1)}
-                            </option>
-                        ))}
+                            <label htmlFor="injury_date" className="form-label"> Injury Date </label>
+                            <input type="date" id="injury_date" className="form-input" value={date} onChange={e=>setDate(e.target.value)} />
 
-                        </select>
+                            <div>
+                                <label className="block font-medium mb-2"> Affected Joint </label>
+                                <div className="flex gap-6 mb-4">
+                                    <label className="flex items-center gap-2">
+                                        <input type="radio" value="left" checked={side === "left"} onChange={(e) => setSide(e.target.value)} />
+                                        Left
+                                    </label>
+                                    <label className="flex items-center gap-2">
+                                        <input type="radio" value="right" checked={side === "right"} onChange={(e) => setSide(e.target.value)} />
+                                        Right
+                                    </label>
+                                </div>
+                                <select value={joint} onChange={(e) => setJoint(e.target.value)} className="w-full border rounded-lg p-2">
+                                    {JOINTS.map(j => (
+                                        <option key={j} value={j}>{j.charAt(0).toUpperCase() + j.slice(1)}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                    </div>
+                            <label htmlFor="description" className="form-label"> Description </label>
+                            <input type="text" id="description" placeholder="Brief description of the injury" value={description} className="form-input" onChange={e=>setDescription(e.target.value)} />
 
-                    <label htmlFor="description" className="form-label"> Description </label>
-                    <input type="text" id="description" placeholder="Description" value={description} className="form-input" onChange={e=>setDescription(e.target.value)} />
-                    
-                    <button type="submit" className="primary-button"> Submit </button>
-                </form>
+                            <button type="submit" className="primary-button"> Save Injury </button>
+                        </form>
+                    )}
+                </div>
             </div>
         </>
     );
