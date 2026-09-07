@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import Navbar from "../components/Navbar";
+import OnboardingChecklist from "../components/OnboardingChecklist";
 
 const Dashboard = ({ user }) => {
 
@@ -116,6 +117,8 @@ const Dashboard = ({ user }) => {
             <div className="mx-50">
                 <h1> Welcome {user?.email}</h1>
             
+                <OnboardingChecklist userId={user.id} injuries={injuriesList} />
+
                 <div id="injuryList" className="mt-10"> 
                     <h2 className="text-2xl font-semibold mb-5">Your Injuries</h2>
 
