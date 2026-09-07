@@ -74,7 +74,11 @@ const Signup = ({setUser}) => {
               {error && (
                 <p className="text-red-600 text-sm mt-3">{error}</p>
               )}
-              <button type="submit" disabled={!acknowledged} className="primary-button mt-4 disabled:opacity-50 disabled:cursor-not-allowed"> Create Account </button>
+              <button type="submit" disabled={!acknowledged} className="primary-button mt-6 disabled:opacity-50 disabled:cursor-not-allowed"> Create Account </button>
+              <p className="text-sm text-center text-gray-500 mt-4">
+                Already have an account?{" "}
+                <Link to="/login" className="text-blue-600 hover:underline">Sign in</Link>
+              </p>
           </form>
       </div>
     </>)
