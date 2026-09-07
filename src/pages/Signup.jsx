@@ -8,20 +8,21 @@ const Signup = ({setUser}) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [acknowledged, setAcknowledged] = useState(false)
+    const [error, setError] = useState("")
     const navigate = useNavigate()
 
   async function handleSignUp(e) {
     e.preventDefault()
+    setError("")
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
     })
 
-    if (error) {
-      console.log("Signup error:", error.message)
+    if (authError) {
+      setError(authError.message)
     } else {
-      console.log("Signup success:", data);
       setUser(data.user);
       setEmail("")
       setPassword("")
@@ -53,7 +54,10 @@ const Signup = ({setUser}) => {
                 I understand OrthoTrack is not a medical device and does not replace professional medical advice.
               </label>
 
-              <button type="submit" disabled={!acknowledged} className="primary-button disabled:opacity-50 disabled:cursor-not-allowed"> Submit </button>
+              {error && (
+                <p className="text-red-600 text-sm mt-3">{error}</p>
+              )}
+              <button type="submit" disabled={!acknowledged} className="primary-button mt-4 disabled:opacity-50 disabled:cursor-not-allowed"> Create Account </button>
           </form>
       </div>
     </>)

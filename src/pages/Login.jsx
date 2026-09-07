@@ -7,20 +7,21 @@ const Login = ({setUser}) => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [error, setError] = useState("")
     const navigate = useNavigate()
 
   async function handleLogin(e) {
     e.preventDefault()
+    setError("")
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
-    if (error) {
-      console.log("Login error:", error.message)
+    if (authError) {
+      setError(authError.message)
     } else {
-      console.log("Login success:", data)
       setUser(data.user)
       setEmail("")
       setPassword("")
@@ -37,7 +38,10 @@ const Login = ({setUser}) => {
               <input className="form-input" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
               <label htmlFor="password" className="form-label"> Password </label>
               <input className="form-input" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
-              <button type="submit" className="primary-button" > Submit </button>
+              {error && (
+                <p className="text-red-600 text-sm mt-3">{error}</p>
+              )}
+              <button type="submit" className="primary-button mt-4"> Sign In </button>
           </form>
       </div>
     </>)
