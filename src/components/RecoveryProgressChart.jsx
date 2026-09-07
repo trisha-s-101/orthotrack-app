@@ -57,7 +57,7 @@ function RecoveryProgressChart({ injuryId, exercise, refreshKey }) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 mt-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
         <h2 className="text-xl font-semibold mb-2">
           Recovery Progress
         </h2>
@@ -68,7 +68,7 @@ function RecoveryProgressChart({ injuryId, exercise, refreshKey }) {
 
   if (chartData.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6 mt-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
         <h2 className="text-xl font-semibold mb-2">
           Recovery Progress
         </h2>

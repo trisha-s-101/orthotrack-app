@@ -131,7 +131,7 @@ const Dashboard = ({ user }) => {
                                 <div 
                                     key={injury.id} 
                                     onClick={() => handleCardClick(injury.id)}
-                                    className="bg-white rounded-xl shadow-md p-6 border border-gray-200 cursor-pointer hover:border-blue-400 transition-colors"
+                                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:border-blue-400 transition-colors"
                                 > 
                                     <h3 className="text-xl font-semibold text-blue-600">{injury.name}</h3>
                                     <div className="mt-3 space-y-1 text-gray-700">

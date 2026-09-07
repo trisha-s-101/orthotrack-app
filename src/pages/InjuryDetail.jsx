@@ -217,7 +217,7 @@ const InjuryDetail = ({ user }) => {
     <div className="max-w-3xl mx-auto px-6 py-8">
       <Link to="/dashboard" className="text-blue-600 hover:underline mb-4 block"> ← Back to Dashboard </Link>
 
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
         <h1 className="text-3xl font-bold mb-2">{injury.name}</h1>
         <p className="text-gray-600 mb-1">
           <strong>Date:</strong> {injury.injury_date}

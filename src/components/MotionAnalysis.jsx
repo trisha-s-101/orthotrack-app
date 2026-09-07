@@ -2,7 +2,7 @@ function MotionAnalysis({ metrics, repetitions }) {
   if (!metrics) return null;
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 mt-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mt-6">
       <h3 className="text-xl font-semibold mb-4">
         Motion Analysis
       </h3>

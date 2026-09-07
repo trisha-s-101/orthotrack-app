@@ -18,7 +18,7 @@ function ROMChart({ measurements }) {
   }));
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mt-6">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-6">
       <h2 className="text-xl font-semibold mb-4">
         Angle Over Time
       </h2>

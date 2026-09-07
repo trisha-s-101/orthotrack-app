@@ -39,7 +39,7 @@ function ProgressComparison({ injuryId, exercise, currentROM }) {
 
   return (
 
-    <div className="bg-white rounded-xl shadow-md p-6 mt-8">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
 
       <h2 className="text-xl font-bold mb-5">
         Progress Since Last Session
