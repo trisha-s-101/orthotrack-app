@@ -60,7 +60,7 @@ function App() {
         <Route path="/" element={
 
           <>
-            <Hero />
+            <Hero user={user} />
             <FeatureSection />
           </>
         }>
