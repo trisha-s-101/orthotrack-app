@@ -74,6 +74,9 @@ const InjuryDetail = ({ user }) => {
   }
 
   async function deleteEvent(id){
+    const confirmed = window.confirm("Delete this timeline event? This cannot be undone.")
+    if (!confirmed) return
+
     const { error } = await supabase
         .from("timeline_events")
         .delete()

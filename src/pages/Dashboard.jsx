@@ -88,6 +88,9 @@ const Dashboard = ({ user }) => {
     async function deleteInjury(e, id) {
         e.stopPropagation(); // Stops handleCardClick from firing
 
+        const confirmed = window.confirm("Delete this injury? This will permanently remove all associated sessions, timeline events, and goals.")
+        if (!confirmed) return
+
         const { error } = await supabase
             .from("injuries")
             .delete()
