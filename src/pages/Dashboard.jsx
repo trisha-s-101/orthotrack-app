@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import Navbar from "../components/Navbar";
@@ -201,14 +201,21 @@ const Dashboard = ({ user }) => {
                                             <p><span className="font-medium">Date:</span>{" "}{injury.injury_date}</p>
                                             <p><span>{formatJoint(injury.joint)}</span></p>
                                             <p><span className="font-medium">Description:</span>{" "}{injury.description}</p>
-                                            <div className="mt-4 flex gap-3">
-                                                <button type="button" onClick={(e) => handleTrackROM(e, injury.id)} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                            <div className="mt-4 flex flex-wrap gap-3">
+                                                <button type="button" onClick={(e) => handleTrackROM(e, injury.id)} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
                                                     Track ROM
                                                 </button>
-                                                <button type="button" onClick={(e) => startEditing(e, injury)} className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                                <Link
+                                                    to={`/rom/${injury.id}/history`}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="border border-blue-300 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+                                                >
+                                                    View History
+                                                </Link>
+                                                <button type="button" onClick={(e) => startEditing(e, injury)} className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm">
                                                     Edit
                                                 </button>
-                                                <button type="button" onClick={(e) => deleteInjury(e, injury.id)} className="border border-red-300 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors">
+                                                <button type="button" onClick={(e) => deleteInjury(e, injury.id)} className="border border-red-300 text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors text-sm">
                                                     Delete
                                                 </button>
                                             </div>

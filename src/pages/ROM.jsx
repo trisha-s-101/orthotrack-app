@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import PastSessions from "../components/PastSessions";
 import ProgressComparison from "../components/ProgressComparison";
 import RecoveryProgressChart from "../components/RecoveryProgressChart";
 import ROMUpload from "../components/ROMUpload";
@@ -143,7 +142,12 @@ const ROM = ({ user }) => {
       {/* Nav */}
       <div className="flex items-center justify-between mb-6">
         <Link to={`/injuries/${id}`} className="text-blue-600 hover:underline text-sm">← View Timeline</Link>
-        <Link to="/dashboard" className="text-gray-500 hover:text-gray-700 text-sm">Dashboard</Link>
+        <div className="flex gap-3">
+          <Link to={`/rom/${id}/history`} className="border border-blue-300 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 text-sm font-medium">
+            View History
+          </Link>
+          <Link to="/dashboard" className="text-gray-500 hover:text-gray-700 text-sm self-center">Dashboard</Link>
+        </div>
       </div>
 
       <div className="mb-8">
@@ -164,7 +168,7 @@ const ROM = ({ user }) => {
           <span className="text-gray-300">·</span>
           <a href="#progress" className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Recovery Progress</a>
           <span className="text-gray-300">·</span>
-          <a href="#history" className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Session History</a>
+          <Link to={`/rom/${id}/history`} className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Session History</Link>
         </div>
       )}
 
@@ -243,14 +247,9 @@ const ROM = ({ user }) => {
             <ProgressComparison injuryId={id} exercise={result.exercise} currentROM={result.metrics.range_of_motion} />
             <RecoveryProgressChart injuryId={id} exercise={result.exercise} refreshKey={sessionRefreshKey} />
           </section>
-
-          <section id="history" className="mb-10">
-            <h2 className="text-2xl font-bold mb-1">Session History</h2>
-            <p className="text-sm text-gray-500 mb-5">Review your previous range-of-motion measurements for this injury.</p>
-            <PastSessions injuryId={id} />
-          </section>
         </>
       )}
+
 
       {/* Session saved toast */}
       {showToast && (

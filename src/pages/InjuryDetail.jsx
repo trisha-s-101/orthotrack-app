@@ -221,9 +221,14 @@ const InjuryDetail = ({ user }) => {
       {/* Nav */}
       <div className="flex items-center justify-between mb-8">
         <Link to="/dashboard" className="text-blue-600 hover:underline text-sm">← Back to Dashboard</Link>
-        <Link to={`/rom/${id}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium">
-          Track ROM →
-        </Link>
+        <div className="flex gap-3">
+          <Link to={`/rom/${id}/history`} className="border border-blue-300 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 text-sm font-medium">
+            View History
+          </Link>
+          <Link to={`/rom/${id}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium">
+            Track ROM →
+          </Link>
+        </div>
       </div>
 
       {/* Injury info */}

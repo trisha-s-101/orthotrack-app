@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import { supabase } from "./supabaseClient.js"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import ROM from "./pages/ROM";
+import ROMHistory from "./pages/ROMHistory";
 
 function App() {
 
@@ -77,6 +78,9 @@ function App() {
           } />
         <Route path="/rom/:id" element={
           <ProtectedRoute user={user}><ROM user={user} /></ProtectedRoute>
+        } />
+        <Route path="/rom/:id/history" element={
+          <ProtectedRoute user={user}><ROMHistory user={user} /></ProtectedRoute>
         } />
       </Routes>
       <Footer />
