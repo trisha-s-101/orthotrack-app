@@ -22,6 +22,7 @@ const ROM = ({ user }) => {
   const [showUpload, setShowUpload] = useState(true);
   const [showGoal, setShowGoal] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showToast, setShowToast] = useState(false)
 
   const { id } = useParams();
 
@@ -74,6 +75,7 @@ const ROM = ({ user }) => {
       setSessionRefreshKey((previous) => previous + 1);
       setResult(data);
       setShowUpload(false);
+      setShowToast(true);
 
     } catch (error) {
       console.log("Fetch error:", error);
@@ -109,6 +111,12 @@ const ROM = ({ user }) => {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!showToast) return;
+    const timer = setTimeout(() => setShowToast(false), 3000);
+    return () => clearTimeout(timer);
+  }, [showToast]);
 
   async function handleTargetSave(value){
     value = parseFloat(value);
@@ -242,6 +250,13 @@ const ROM = ({ user }) => {
             <PastSessions injuryId={id} />
           </section>
         </>
+      )}
+
+      {/* Session saved toast */}
+      {showToast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-sm px-5 py-3 rounded-full shadow-lg z-50 flex items-center gap-2">
+          <span className="text-green-400">✓</span> Session saved
+        </div>
       )}
 
       {/* Back to top */}
