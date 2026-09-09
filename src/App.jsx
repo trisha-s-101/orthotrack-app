@@ -12,11 +12,17 @@ import { supabase } from "./supabaseClient.js"
 import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import ROM from "./pages/ROM";
 import ROMHistory from "./pages/ROMHistory";
+import Settings from "./pages/Settings";
 
 function App() {
 
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true); // 1. Added loading state
+
+  useEffect(() => {
+    const stored = localStorage.getItem("orthotrack_theme")
+    document.documentElement.setAttribute("data-theme", stored === "dark" ? "dark" : "light")
+  }, [])
 
   useEffect(() => {
     // Check active session on initial load
@@ -81,6 +87,9 @@ function App() {
         } />
         <Route path="/rom/:id/history" element={
           <ProtectedRoute user={user}><ROMHistory user={user} /></ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute user={user}><Settings user={user} /></ProtectedRoute>
         } />
       </Routes>
       <Footer />

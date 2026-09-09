@@ -17,6 +17,7 @@ const Dashboard = ({ user }) => {
     const [injuriesList, setInjuriesList] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingInjury, setEditingInjury] = useState(null);
+    const [displayName, setDisplayName] = useState("");
 
     const JOINTS = [
     "shoulder",
@@ -43,6 +44,15 @@ const Dashboard = ({ user }) => {
     useEffect(() => {
         if (user?.id) {
             getInjury();
+            supabase
+                .from("profiles")
+                .select("display_name")
+                .eq("id", user.id)
+                .single()
+                .then(({ data, error }) => {
+                    if (error) console.error("Profile fetch error:", error)
+                    if (data?.display_name) setDisplayName(data.display_name)
+                })
         }
     }, [user?.id]);
 
@@ -146,7 +156,7 @@ const Dashboard = ({ user }) => {
     return (
         <>
             <div className="mx-50">
-                <h1> Welcome {user?.email}</h1>
+                <h1 className="text-2xl font-semibold mb-4">Welcome, {displayName || user?.email}</h1>
             
                 <OnboardingChecklist userId={user.id} injuries={injuriesList} />
 

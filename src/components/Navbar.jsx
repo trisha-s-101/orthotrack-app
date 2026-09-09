@@ -24,6 +24,9 @@ const Navbar = ({ user, setUser }) => {
             <Link to="/dashboard" className="hover:bg-blue-700 px-4 py-2 rounded">
               Dashboard
             </Link>
+            <Link to="/settings" className="hover:bg-blue-700 px-4 py-2 rounded">
+              Settings
+            </Link>
             <button
               onClick={handleLogout}
               className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
