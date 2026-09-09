@@ -50,6 +50,12 @@ function PastSessions({ injuryId }) {
     setComparing(false);
   }
 
+  function handleAutoCompare() {
+    if (sessions.length < 2) return;
+    setSelectedSessions([sessions[0], sessions[1]]);
+    setComparing(true);
+  }
+
   return (
     <div className="mt-12">
 
@@ -57,6 +63,20 @@ function PastSessions({ injuryId }) {
         <p className="text-gray-500">No past sessions yet.</p>
       ) : (
         <>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-gray-400">
+              Click a session to view details. Select two to compare.
+            </p>
+            {sessions.length >= 2 && (
+              <button
+                onClick={handleAutoCompare}
+                className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Compare Last 2 Sessions
+              </button>
+            )}
+          </div>
+
           <div className="space-y-3 max-h-80 overflow-y-auto">
             {sessions.map((session) => {
               const isSelected = selectedSessions.some((s) => s.id === session.id);
@@ -88,23 +108,20 @@ function PastSessions({ injuryId }) {
                       <p className="font-semibold mt-1">
                         {session.exercise
                           ?.split("_")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                          )
+                          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                           .join(" ") ?? "—"}
                         {" — "}
                         {session.joint
                           ?.split("_")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                          )
+                          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                           .join(" ")}
                       </p>
                     </div>
 
                     <div className="text-right">
+                      {isSelected && (
+                        <p className="text-xs text-blue-500 font-medium mb-1">Selected</p>
+                      )}
                       <p className="text-sm text-gray-500">ROM</p>
                       <p className="text-xl font-bold text-blue-600">
                         {Number(session.range_of_motion).toFixed(1)}°
@@ -115,6 +132,10 @@ function PastSessions({ injuryId }) {
               );
             })}
           </div>
+
+          {selectedSessions.length === 1 && !comparing && (
+            <p className="text-xs text-gray-400 mt-3">Select one more session to compare.</p>
+          )}
 
           {selectedSessions.length === 2 && !comparing && (
             <div className="flex gap-3 mt-4">
