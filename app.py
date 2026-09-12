@@ -185,12 +185,10 @@ def analyzeVideo():
         os.close(temp_fd)  # close the file descriptor, we just need the path
     
         try:
-            print("GOING TO SAVE THE FILE")
             file.save(temp_path)
             # Run MediaPipe processing with the saved path
             response_data = process_video(temp_path, joint)
             # Save to Supabase
-            print("PROCESSING THE VIDEO WORKED")
             session_data = {
                 "user_id": user_id,
                 "injury_id": injury_id,
@@ -238,6 +236,32 @@ def analyzeVideo():
     print("Final results being sent to React:", response)
     return response
 
+def calculate_angle(landmark1, landmark2, landmark3):
+    x1 = landmark1.x
+    y1 = landmark1.y
+    x2 = landmark2.x
+    y2 = landmark2.y
+    x3 = landmark3.x
+    y3 = landmark3.y
+
+    vector1 = [x1-x2, y1-y2]
+    vector2 = [x3-x2, y3-y2]
+    dot_product = (vector1[0] * vector2[0]) + (vector1[1] * vector2[1])
+    magnitude1 = math.sqrt(vector1[0] ** 2 + vector1[1] ** 2)
+    magnitude2 = math.sqrt(vector2[0] ** 2 + vector2[1] ** 2)
+
+    if (magnitude1 == 0 or magnitude2 == 0):
+        return None
+
+    result = dot_product / (magnitude1 * magnitude2)
+    # Clamp to prevent math domain errors from floating-point imprecision
+    result = max(-1.0, min(1.0, result))
+    result = math.acos(result)
+    result_degrees = math.degrees(result)
+
+    return result_degrees
+
+
 def process_video(video_path, joint):
 
     print("PROCESS VIDEO FUNCTION CALLED")
@@ -257,33 +281,6 @@ def process_video(video_path, joint):
     )
 
     detector = vision.PoseLandmarker.create_from_options(options)
-
-    #calculating the angle given three points
-
-    def calculate_angle(landmark1, landmark2, landmark3):
-        x1 = landmark1.x
-        y1 = landmark1.y
-        x2 = landmark2.x
-        y2 = landmark2.y
-        x3 = landmark3.x
-        y3 = landmark3.y
-
-        vector1 = [x1-x2, y1-y2]
-        vector2 = [x3-x2, y3-y2]
-        dot_product = (vector1[0] * vector2[0]) + (vector1[1] * vector2[1])
-        magnitude1 = math.sqrt(vector1[0] ** 2 + vector1[1] ** 2)
-        magnitude2 = math.sqrt(vector2[0] ** 2 + vector2[1] ** 2)
-
-        if magnitude1 == 0 or magnitude2 == 0:
-            return None
-
-        result = dot_product / (magnitude1 * magnitude2)
-        # CRITICAL FIX: Clamp the value between -1.0 and 1.0 to prevent math domain errors
-        result = max(-1.0, min(1.0, result))
-        result = math.acos(result)
-        result_degrees = math.degrees(result)
-
-        return result_degrees
 
     fps = video.get(cv2.CAP_PROP_FPS)
 
