@@ -18,14 +18,19 @@ from scipy.signal import find_peaks
 
 app = Flask(__name__)
 
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+]
+frontend_url = os.getenv("FRONTEND_URL")
+if frontend_url:
+    allowed_origins.append(frontend_url)
+
 CORS(
     app,
     resources={
         r"/analyze-rom": {
-            "origins": [
-                "http://localhost:5173",
-                "http://localhost:5174"
-            ]
+            "origins": allowed_origins
         }
     }
 )

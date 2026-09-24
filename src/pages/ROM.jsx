@@ -58,7 +58,8 @@ const ROM = ({ user }) => {
     formData.append("notes", notes);
 
     try {
-      const response = await fetch("http://localhost:5001/analyze-rom", {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001";
+      const response = await fetch(`${backendUrl}/analyze-rom`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
