@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y \
     libxrender-dev \
     libgomp1 \
     ffmpeg \
+    libegl1 \
+    libegl-mesa0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
