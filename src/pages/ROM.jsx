@@ -8,6 +8,7 @@ import ROMSummary from "../components/ROMSummary";
 import MotionAnalysis from "../components/MotionAnalysis";
 import ROMChart from "../components/ROMChart";
 import ROMGoal from "../components/ROMGoal";
+import PastSessions from "../components/PastSessions";
 
 const ROM = ({ user }) => {
   const [video, setVideo] = useState(null);
@@ -164,16 +165,14 @@ const ROM = ({ user }) => {
         </p>
       </div>
 
-      {/* Sticky anchor nav — shown once results exist */}
-      {result && (
-        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-gray-200 -mx-10 px-10 py-0 mb-8 flex gap-1 overflow-x-auto">
+      {/* Sticky anchor nav — always visible */}
+      <div className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-gray-200 -mx-10 px-10 py-0 mb-8 flex gap-1 overflow-x-auto">
           <a href="#upload" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Upload</a>
           <a href="#goal" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Goal</a>
           <a href="#session" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Current Session</a>
           <a href="#progress" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Recovery Progress</a>
-          <Link to={`/rom/${id}/history`} className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Session History</Link>
+          <a href="#history" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Session History</a>
         </div>
-      )}
 
       {/* Upload section — collapsible */}
       <div id="upload" className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
@@ -233,7 +232,7 @@ const ROM = ({ user }) => {
         )}
       </div>
 
-      {/* Results */}
+      {/* Results — only shown after uploading */}
       {result && (
         <>
           <section id="session" className="mb-10">
@@ -252,6 +251,20 @@ const ROM = ({ user }) => {
           </section>
         </>
       )}
+
+      {/* Past sessions — always visible */}
+      <section id="history" className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold mb-1">Session History</h2>
+            <p className="text-sm text-gray-500">Click any session to view its full results. Select two to compare.</p>
+          </div>
+          <Link to={`/rom/${id}/history`} className="text-sm text-teal-700 hover:underline font-medium">
+            View all →
+          </Link>
+        </div>
+        <PastSessions injuryId={id} />
+      </section>
 
 
       {/* Session saved toast */}
