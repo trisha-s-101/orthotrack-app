@@ -39,7 +39,7 @@ const Signup = ({setUser}) => {
             We sent a confirmation link to <span className="font-medium">{email}</span>.
             Click it to activate your account, then sign in.
           </p>
-          <Link to="/login" className="text-blue-600 hover:underline text-sm">
+          <Link to="/login" className="text-teal-600 hover:underline text-sm">
             Go to Sign In
           </Link>
         </div>
@@ -49,14 +49,21 @@ const Signup = ({setUser}) => {
 
     return (
     <>
-      <div className="min-h-screen flex gap-8 items-center justify-center bg-gray-50 ">
-          <form onSubmit={handleSignUp} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
-              <h1 className="text-2xl text-center mb-5"> Sign Up</h1>
-              <label className="form-label" htmlFor="email"> Email </label>
-              <input className="form-input" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
-              <label htmlFor="password" className="form-label"> Password </label>
-              <input className="form-input" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 text-sm text-gray-600">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+          <form onSubmit={handleSignUp} className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-10 flex flex-col gap-5">
+              <div className="text-center mb-2">
+                <h1 className="text-3xl font-bold">Create Account</h1>
+                <p className="text-gray-500 mt-1 text-sm">Start tracking your orthopedic recovery</p>
+              </div>
+              <div>
+                <label className="form-label" htmlFor="email">Email</label>
+                <input className="form-input text-base" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="password" className="form-label">Password</label>
+                <input className="form-input text-base" type="password" id="password" placeholder="••••••••" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-600">
                 <p className="font-semibold mb-1">Before you continue</p>
                 <p>OrthoTrack measures changes in your personal range of motion over time. It does not diagnose injuries, predict recovery timelines, or replace guidance from your physician or physical therapist.</p>
               </div>
@@ -72,12 +79,12 @@ const Signup = ({setUser}) => {
               </label>
 
               {error && (
-                <p className="text-red-600 text-sm mt-3">{error}</p>
+                <p className="text-red-600 text-sm">{error}</p>
               )}
-              <button type="submit" disabled={!acknowledged} className="primary-button mt-6 disabled:opacity-50 disabled:cursor-not-allowed"> Create Account </button>
-              <p className="text-sm text-center text-gray-500 mt-4">
+              <button type="submit" disabled={!acknowledged} className="primary-button py-3.5 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed">Create Account</button>
+              <p className="text-sm text-center text-gray-500">
                 Already have an account?{" "}
-                <Link to="/login" className="text-blue-600 hover:underline">Sign in</Link>
+                <Link to="/login" className="text-teal-600 hover:underline font-medium">Sign in</Link>
               </p>
           </form>
       </div>

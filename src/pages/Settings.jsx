@@ -90,7 +90,7 @@ const Settings = ({ user }) => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="max-w-2xl mx-auto px-6 py-10">
       <h1 className="text-3xl font-bold mb-8">Settings</h1>
 
       {/* Profile */}
@@ -104,7 +104,7 @@ const Settings = ({ user }) => {
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
               placeholder="e.g. Trisha"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
             />
             <p className="text-xs text-gray-400 mt-1">Shown on your dashboard instead of your email.</p>
           </div>
@@ -130,7 +130,7 @@ const Settings = ({ user }) => {
           <button
             type="submit"
             disabled={saving}
-            className="self-start bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 text-sm font-medium"
+            className="self-start bg-teal-700 text-white px-5 py-2.5 rounded-lg hover:bg-teal-800 disabled:bg-gray-400 text-sm font-medium"
           >
             {saving ? "Saving..." : saved ? "Saved ✓" : "Save Changes"}
           </button>
@@ -145,7 +145,7 @@ const Settings = ({ user }) => {
           <span className="text-sm font-medium text-gray-700">Dark Mode</span>
           <button
             onClick={handleDarkModeToggle}
-            className={`relative w-11 h-6 rounded-full transition-colors ${darkMode ? "bg-blue-600" : "bg-gray-300"}`}
+            className={`relative w-11 h-6 rounded-full transition-colors ${darkMode ? "bg-teal-700" : "bg-gray-300"}`}
           >
             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${darkMode ? "translate-x-5" : "translate-x-0"}`} />
           </button>

@@ -93,8 +93,8 @@ function ROMUpload({
       <button
         onClick={handleAnalyze}
         disabled={loading}
-        className="bg-blue-600 text-white px-6 py-3 rounded-lg
-                   hover:bg-blue-700 disabled:bg-gray-400
+        className="bg-teal-700 text-white px-6 py-3 rounded-lg
+                   hover:bg-teal-800 disabled:bg-gray-400
                    transition"
       >
         {loading ? "Analyzing..." : "Analyze Video"}

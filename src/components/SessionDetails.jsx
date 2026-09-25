@@ -124,9 +124,9 @@ function SessionDetails({ session, onClose }) {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div className="bg-blue-50 rounded-lg p-4">
+        <div className="bg-teal-50 rounded-lg p-4">
           <p className="text-sm text-gray-500">Range of Motion</p>
-          <p className="text-2xl font-bold text-blue-600">
+          <p className="text-2xl font-bold text-teal-700">
             {Number(session.range_of_motion).toFixed(1)}°
           </p>
         </div>

@@ -144,13 +144,13 @@ const ROM = ({ user }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-6xl mx-auto px-10 py-8">
 
       {/* Nav */}
       <div className="flex items-center justify-between mb-6">
-        <Link to={`/injuries/${id}`} className="text-blue-600 hover:underline text-sm">← View Timeline</Link>
+        <Link to={`/injuries/${id}`} className="text-teal-700 hover:underline text-sm">← View Timeline</Link>
         <div className="flex gap-3">
-          <Link to={`/rom/${id}/history`} className="border border-blue-300 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 text-sm font-medium">
+          <Link to={`/rom/${id}/history`} className="border border-teal-300 text-teal-700 px-4 py-2 rounded-lg hover:bg-teal-50 text-sm font-medium">
             View History
           </Link>
           <Link to="/dashboard" className="text-gray-500 hover:text-gray-700 text-sm self-center">Dashboard</Link>
@@ -166,16 +166,12 @@ const ROM = ({ user }) => {
 
       {/* Sticky anchor nav — shown once results exist */}
       {result && (
-        <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-gray-200 -mx-8 px-8 py-3 mb-8 flex gap-6 text-xl overflow-x-auto">
-          <a href="#upload" className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Upload</a>
-          <span className="text-gray-300">·</span>
-          <a href="#goal" className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Goal</a>
-          <span className="text-gray-300">·</span>
-          <a href="#session" className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Current Session</a>
-          <span className="text-gray-300">·</span>
-          <a href="#progress" className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Recovery Progress</a>
-          <span className="text-gray-300">·</span>
-          <Link to={`/rom/${id}/history`} className="text-blue-600 hover:underline whitespace-nowrap border border-blue-500 rounded-sm bg-blue-200 px-1">Session History</Link>
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-gray-200 -mx-10 px-10 py-0 mb-8 flex gap-1 overflow-x-auto">
+          <a href="#upload" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Upload</a>
+          <a href="#goal" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Goal</a>
+          <a href="#session" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Current Session</a>
+          <a href="#progress" className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Recovery Progress</a>
+          <Link to={`/rom/${id}/history`} className="text-sm font-medium text-gray-500 hover:text-teal-700 whitespace-nowrap px-4 py-3.5 border-b-2 border-transparent hover:border-teal-600 transition-colors">Session History</Link>
         </div>
       )}
 
@@ -269,7 +265,7 @@ const ROM = ({ user }) => {
       {showBackToTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-8 right-8 bg-blue-600 text-white px-4 py-2.5 rounded-full shadow-lg hover:bg-blue-700 text-sm font-medium z-50"
+          className="fixed bottom-8 right-8 bg-teal-700 text-white px-4 py-2.5 rounded-full shadow-lg hover:bg-teal-800 text-sm font-medium z-50"
         >
           ↑ Top
         </button>

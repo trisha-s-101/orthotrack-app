@@ -155,8 +155,9 @@ const Dashboard = ({ user }) => {
 
     return (
         <>
-            <div className="mx-50">
-                <h1 className="text-2xl font-semibold mb-4">Welcome, {displayName || user?.email}</h1>
+            <div className="max-w-3xl mx-auto px-6 py-8">
+                <h1 className="text-3xl font-bold mb-2">Welcome, {displayName || user?.email}</h1>
+                <p className="text-gray-500 mb-8 text-sm">Manage your injuries and track your recovery progress below.</p>
             
                 <OnboardingChecklist userId={user.id} injuries={injuriesList} />
 
@@ -172,7 +173,7 @@ const Dashboard = ({ user }) => {
                                     <form
                                         key={injury.id}
                                         onSubmit={updateInjury}
-                                        className="bg-white rounded-xl shadow-sm border border-blue-300 p-6 flex flex-col gap-4"
+                                        className="bg-white rounded-xl shadow-sm border border-teal-300 p-6 flex flex-col gap-4"
                                     >
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-semibold">Edit Injury</h3>
@@ -204,9 +205,9 @@ const Dashboard = ({ user }) => {
                                     <div
                                         key={injury.id}
                                         onClick={() => handleCardClick(injury.id)}
-                                        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:border-blue-400 transition-colors"
+                                        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 cursor-pointer hover:border-teal-400 transition-colors"
                                     >
-                                        <h3 className="text-xl font-semibold text-blue-600">{injury.name}</h3>
+                                        <h3 className="text-xl font-semibold text-teal-700">{injury.name}</h3>
                                         <div className="mt-3 space-y-1 text-gray-700">
                                             <p><span className="font-medium">Date:</span>{" "}{injury.injury_date}</p>
                                             <p><span>{formatJoint(injury.joint)}</span></p>
@@ -218,7 +219,7 @@ const Dashboard = ({ user }) => {
                                                 <Link
                                                     to={`/rom/${injury.id}/history`}
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className="border border-blue-300 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+                                                    className="border border-teal-300 text-teal-700 px-4 py-2 rounded-lg hover:bg-teal-50 transition-colors text-sm"
                                                 >
                                                     View History
                                                 </Link>
@@ -242,7 +243,7 @@ const Dashboard = ({ user }) => {
                         <div className="flex justify-center">
                             <button
                                 onClick={() => setShowForm(true)}
-                                className="bg-blue-600 text-white px-10 py-4 rounded-xl hover:bg-blue-700 transition-colors font-semibold text-lg mb-5"
+                                className="bg-teal-700 text-white px-10 py-4 rounded-xl hover:bg-teal-800 transition-colors font-semibold text-lg mb-5"
                             >
                                 + Add Injury
                             </button>

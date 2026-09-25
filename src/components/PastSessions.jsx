@@ -70,7 +70,7 @@ function PastSessions({ injuryId }) {
             {sessions.length >= 2 && (
               <button
                 onClick={handleAutoCompare}
-                className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 font-medium"
+                className="text-xs bg-teal-700 text-white px-3 py-1.5 rounded-lg hover:bg-teal-800 font-medium"
               >
                 Compare Last 2 Sessions
               </button>
@@ -87,7 +87,7 @@ function PastSessions({ injuryId }) {
                   onClick={() => handleSessionClick(session)}
                   className={`w-full text-left p-4 rounded-lg border transition ${
                     isSelected
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-teal-500 bg-teal-50"
                       : "border-gray-200 bg-gray-50 hover:bg-gray-100"
                   }`}
                 >
@@ -120,10 +120,10 @@ function PastSessions({ injuryId }) {
 
                     <div className="text-right">
                       {isSelected && (
-                        <p className="text-xs text-blue-500 font-medium mb-1">Selected</p>
+                        <p className="text-xs text-teal-600 font-medium mb-1">Selected</p>
                       )}
                       <p className="text-sm text-gray-500">ROM</p>
-                      <p className="text-xl font-bold text-blue-600">
+                      <p className="text-xl font-bold text-teal-700">
                         {Number(session.range_of_motion).toFixed(1)}°
                       </p>
                     </div>
@@ -141,7 +141,7 @@ function PastSessions({ injuryId }) {
             <div className="flex gap-3 mt-4">
               <button
                 onClick={() => setComparing(true)}
-                className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 text-sm"
+                className="bg-teal-700 text-white px-5 py-2 rounded-lg hover:bg-teal-800 text-sm"
               >
                 Compare Sessions
               </button>

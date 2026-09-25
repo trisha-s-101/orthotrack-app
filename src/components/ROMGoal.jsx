@@ -43,7 +43,7 @@ const ROMGoal = ({ targetRom, currentROM, exercise, onTargetSave }) => {
             <span className="text-gray-500 text-sm">degrees</span>
             <button
               onClick={handleSave}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+              className="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-teal-800"
             >
               Set Goal
             </button>
@@ -52,9 +52,9 @@ const ROMGoal = ({ targetRom, currentROM, exercise, onTargetSave }) => {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 mb-5">
-            <div className="bg-blue-50 rounded-lg p-4">
+            <div className="bg-teal-50 rounded-lg p-4">
               <p className="text-sm text-gray-500">Current ROM</p>
-              <p className="text-3xl font-bold text-blue-600">
+              <p className="text-3xl font-bold text-teal-700">
                 {currentROM != null ? `${currentROM.toFixed(1)}°` : "—"}
               </p>
             </div>
@@ -74,7 +74,7 @@ const ROMGoal = ({ targetRom, currentROM, exercise, onTargetSave }) => {
           <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
             <div
               className={`h-3 rounded-full transition-all ${
-                goalReached ? "bg-green-500" : "bg-blue-500"
+                goalReached ? "bg-green-500" : "bg-teal-500"
               }`}
               style={{ width: `${progress ?? 0}%` }}
             />
@@ -100,7 +100,7 @@ const ROMGoal = ({ targetRom, currentROM, exercise, onTargetSave }) => {
               <span className="text-gray-500 text-sm">degrees</span>
               <button
                 onClick={handleSave}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+                className="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-teal-800"
               >
                 Save
               </button>

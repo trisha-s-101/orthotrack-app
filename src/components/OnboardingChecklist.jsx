@@ -52,23 +52,25 @@ function OnboardingChecklist({ userId, injuries }) {
     },
   ]
 
+  const allDone = steps.every(s => s.done)
+
   function handleDismiss() {
     try { localStorage.setItem(storageKey, "true") } catch {}
     setDismissed(true)
   }
 
-  if (dismissed) return null
+  if (dismissed || allDone) return null
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+    <div className="bg-teal-50 border border-teal-200 rounded-xl p-6 mb-8">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-blue-900">Get started with OrthoTrack</h2>
-          <p className="text-sm text-blue-700 mt-0.5">Complete these steps to set up your recovery tracking.</p>
+          <h2 className="text-lg font-semibold text-teal-900">Get started with OrthoTrack</h2>
+          <p className="text-sm text-teal-700 mt-0.5">Complete these steps to set up your recovery tracking.</p>
         </div>
         <button
           onClick={handleDismiss}
-          className="text-blue-400 hover:text-blue-700 text-sm ml-4 shrink-0"
+          className="text-teal-500 hover:text-teal-700 text-sm ml-4 shrink-0"
         >
           Dismiss
         </button>
@@ -82,8 +84,8 @@ function OnboardingChecklist({ userId, injuries }) {
           >
             <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
               step.done
-                ? "bg-blue-600 border-blue-600 text-white"
-                : "border-blue-400"
+                ? "bg-teal-700 border-teal-600 text-white"
+                : "border-teal-400"
             }`}>
               {step.done && (
                 <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
@@ -94,18 +96,18 @@ function OnboardingChecklist({ userId, injuries }) {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`text-sm font-medium ${step.done ? "line-through text-blue-400" : "text-blue-900"}`}>
+                <span className={`text-sm font-medium ${step.done ? "line-through text-teal-500" : "text-teal-900"}`}>
                   {step.label}
                 </span>
                 {step.locked && (
-                  <span className="text-xs text-blue-400">— add an injury first</span>
+                  <span className="text-xs text-teal-500">— add an injury first</span>
                 )}
               </div>
-              <p className="text-xs text-blue-600 mt-0.5">{step.description}</p>
+              <p className="text-xs text-teal-700 mt-0.5">{step.description}</p>
               {step.action && !step.done && (
                 <button
                   onClick={step.action}
-                  className="text-xs text-blue-700 font-medium hover:underline mt-1"
+                  className="text-xs text-teal-700 font-medium hover:underline mt-1"
                 >
                   Go →
                 </button>

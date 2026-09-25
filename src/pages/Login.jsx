@@ -31,20 +31,27 @@ const Login = ({setUser}) => {
 
     return (
     <>
-      <div className="min-h-screen flex gap-8 items-center justify-center bg-gray-50 ">
-          <form onSubmit={handleLogin} className = "w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-center">
-              <h1 className="text-2xl text-center mb-5"> Sign In</h1>
-              <label className="form-label" htmlFor="email"> Email </label>
-              <input className="form-input" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
-              <label htmlFor="password" className="form-label"> Password </label>
-              <input className="form-input" type="password" id="password" placeholder="*" value = {password} onChange={(e)=>setPassword(e.target.value)}/>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+          <form onSubmit={handleLogin} className="w-full max-w-lg bg-white rounded-2xl shadow-lg p-10 flex flex-col gap-5">
+              <div className="text-center mb-2">
+                <h1 className="text-3xl font-bold">Sign In</h1>
+                <p className="text-gray-500 mt-1 text-sm">Welcome back to OrthoTrack</p>
+              </div>
+              <div>
+                <label className="form-label" htmlFor="email">Email</label>
+                <input className="form-input text-base" type="text" id="email" placeholder="example@email.com" value={email} onChange={(e)=>setEmail(e.target.value)} />
+              </div>
+              <div>
+                <label htmlFor="password" className="form-label">Password</label>
+                <input className="form-input text-base" type="password" id="password" placeholder="••••••••" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+              </div>
               {error && (
-                <p className="text-red-600 text-sm mt-3">{error}</p>
+                <p className="text-red-600 text-sm">{error}</p>
               )}
-              <button type="submit" className="primary-button mt-6"> Sign In </button>
-              <p className="text-sm text-center text-gray-500 mt-4">
+              <button type="submit" className="primary-button py-3.5 text-base font-semibold mt-1">Sign In</button>
+              <p className="text-sm text-center text-gray-500">
                 Don't have an account?{" "}
-                <Link to="/signup" className="text-blue-600 hover:underline">Sign up</Link>
+                <Link to="/signup" className="text-teal-600 hover:underline font-medium">Sign up</Link>
               </p>
           </form>
       </div>

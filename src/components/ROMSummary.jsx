@@ -2,12 +2,12 @@ function ROMSummary({ result }) {
   if (!result) return null;
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+    <div className="bg-teal-50 border border-teal-200 rounded-xl p-6 mb-8">
       <h2 className="text-xl font-semibold mb-2">
         Range of Motion
       </h2>
 
-      <p className="text-5xl font-bold text-blue-600">
+      <p className="text-5xl font-bold text-teal-700">
         {result.metrics.range_of_motion.toFixed(1)}°
       </p>
 

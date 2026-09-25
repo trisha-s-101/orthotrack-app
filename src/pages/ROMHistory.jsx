@@ -24,8 +24,8 @@ const ROMHistory = ({ user }) => {
     <div className="max-w-4xl mx-auto px-6 py-8">
 
       <div className="flex items-center justify-between mb-8">
-        <Link to={`/injuries/${id}`} className="text-blue-600 hover:underline text-sm">← Back to Timeline</Link>
-        <Link to={`/rom/${id}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium">
+        <Link to={`/injuries/${id}`} className="text-teal-700 hover:underline text-sm">← Back to Timeline</Link>
+        <Link to={`/rom/${id}`} className="bg-teal-700 text-white px-4 py-2 rounded-lg hover:bg-teal-800 text-sm font-medium">
           Track ROM →
         </Link>
       </div>

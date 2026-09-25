@@ -66,10 +66,10 @@ function SessionComparisonChart({ sessionA, sessionB, onClose }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-blue-50 rounded-lg p-4">
+        <div className="bg-teal-50 rounded-lg p-4">
           <p className="text-xs text-gray-500 mb-1">Session A</p>
           <p className="font-semibold">{formatDate(sessionA.session_date)}</p>
-          <p className="text-2xl font-bold text-blue-600">
+          <p className="text-2xl font-bold text-teal-700">
             {Number(sessionA.range_of_motion).toFixed(1)}°
           </p>
           <p className="text-sm text-gray-500">ROM</p>
