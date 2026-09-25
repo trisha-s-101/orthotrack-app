@@ -20,7 +20,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pytest numpy scipy mediapipe opencv-python-headless
+          pip install pytest numpy scipy mediapipe opencv-python-headless \
+            flask flask-cors supabase python-dotenv werkzeug
 
       - name: Run tests
         run: pytest test_app.py -v
