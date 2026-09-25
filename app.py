@@ -1,3 +1,6 @@
+import os
+os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "0"
+
 import mediapipe as mp
 import math
 import numpy as np
@@ -7,7 +10,6 @@ from mediapipe.tasks.python import vision
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-import os
 import tempfile 
 import base64
 from supabase_config import get_supabase
