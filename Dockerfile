@@ -17,9 +17,9 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install Python deps, then force headless opencv
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip uninstall -y opencv-python opencv-contrib-python \
-    && pip install --no-cache-dir opencv-python-headless==4.10.0.84
+RUN pip install --no-cache-dir opencv-python-headless==4.10.0.84 \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --force-reinstall opencv-python-headless==4.10.0.84
 
 COPY patch_mediapipe.py .
 RUN python patch_mediapipe.py /usr/local/lib/python3.11/site-packages
