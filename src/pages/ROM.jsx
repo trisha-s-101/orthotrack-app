@@ -72,6 +72,12 @@ const ROM = ({ user }) => {
       }
 
       const data = await response.json();
+
+      if (data.error) {
+        alert(`Analysis failed: ${data.error}`);
+        return;
+      }
+
       setSessionRefreshKey((previous) => previous + 1);
       setResult(data);
       setShowUpload(false);
@@ -79,7 +85,7 @@ const ROM = ({ user }) => {
 
     } catch (error) {
       console.log("Fetch error:", error);
-      alert("Failed to analyze video.");
+      alert("Failed to analyze video. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -223,7 +229,7 @@ const ROM = ({ user }) => {
           <div className="px-6 pb-6 border-t border-gray-100 pt-4">
             <ROMGoal
               targetRom={targetRom}
-              currentROM={result?.metrics.range_of_motion ?? null}
+              currentROM={result?.metrics?.range_of_motion ?? null}
               exercise={exercise}
               onTargetSave={handleTargetSave}
             />
