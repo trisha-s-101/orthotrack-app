@@ -21,8 +21,31 @@ A full-stack web app for patients recovering from orthopedic surgery to track th
 ## Deployment
 
 - **Frontend:** Deployed on [Vercel](https://vercel.com)
-- **Backend:** Deployed on [Render](https://render.com) (Web Service, Python runtime)
+- **Backend:** Run locally or on a server with ≥1GB RAM (see note below)
 - **Database & Auth:** [Supabase](https://supabase.com)
+
+### ⚠️ Backend Hosting Constraint
+
+MediaPipe Pose + OpenCV require **~700–900MB RAM** at runtime. Render's free tier (512MB) and most shared-hosting free tiers are insufficient — the worker process gets OOM-killed mid-analysis.
+
+**Options for running the backend:**
+
+| Option | Cost | Notes |
+|---|---|---|
+| Run locally + expose via [ngrok](https://ngrok.com) | Free | Best for demos and development |
+| Render Starter ($7/mo) | Paid | 512MB → 1GB, enough for MediaPipe |
+| Railway / Fly.io hobby tier | Free/Paid | ~1GB RAM available on free plans |
+| Any VPS (DigitalOcean, Hetzner) | ~$5/mo | Full control, easy Docker deploy |
+
+For a live demo, run the Flask backend locally and use ngrok to get a public URL:
+
+```bash
+python app.py
+# in a second terminal:
+ngrok http 5001
+```
+
+Then set `VITE_BACKEND_URL` in Vercel to your ngrok URL (update it each time ngrok restarts).
 
 ### Environment Variables
 
@@ -30,8 +53,8 @@ A full-stack web app for patients recovering from orthopedic surgery to track th
 |---|---|---|
 | Vercel | `VITE_SUPABASE_URL` | Your Supabase project URL |
 | Vercel | `VITE_SUPABASE_ANON_KEY` | Your Supabase anon key |
-| Vercel | `VITE_BACKEND_URL` | Your Render service URL |
-| Render | `FRONTEND_URL` | Your Vercel deployment URL |
+| Vercel | `VITE_BACKEND_URL` | Your backend URL (ngrok, Render, etc.) |
+| Backend | `FRONTEND_URL` | Your Vercel deployment URL (for CORS) |
 
 ## Local Development
 
