@@ -1,5 +1,7 @@
 # OrthoTrack
 
+![Tests](https://github.com/trisha-s-101/orthotrack-app/actions/workflows/test.yml/badge.svg)
+
 A full-stack web app for patients recovering from orthopedic surgery to track their range of motion, manage their injury records, and monitor recovery progress over time.
 
 ## Features
