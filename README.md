@@ -18,7 +18,22 @@ A full-stack web app for patients recovering from orthopedic surgery to track th
 **Database & Auth:** Supabase (PostgreSQL + Row Level Security)  
 **Testing:** pytest
 
-## Getting Started
+## Deployment
+
+- **Frontend:** Deployed on [Vercel](https://vercel.com)
+- **Backend:** Deployed on [Render](https://render.com) (Web Service, Python runtime)
+- **Database & Auth:** [Supabase](https://supabase.com)
+
+### Environment Variables
+
+| Service | Variable | Value |
+|---|---|---|
+| Vercel | `VITE_SUPABASE_URL` | Your Supabase project URL |
+| Vercel | `VITE_SUPABASE_ANON_KEY` | Your Supabase anon key |
+| Vercel | `VITE_BACKEND_URL` | Your Render service URL |
+| Render | `FRONTEND_URL` | Your Vercel deployment URL |
+
+## Local Development
 
 ### Prerequisites
 
@@ -45,11 +60,11 @@ npm run dev
 ### Backend
 
 ```bash
-pip install flask flask-cors mediapipe opencv-python scipy numpy supabase python-dotenv
+pip install -r requirements.txt
 python app.py
 ```
 
-The Flask server runs on `http://localhost:5000` and the Vite dev server on `http://localhost:5173`.
+The Flask server runs on `http://localhost:5001` and the Vite dev server on `http://localhost:5173`.
 
 ### Tests
 
