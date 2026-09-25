@@ -1,7 +1,7 @@
 import mediapipe as mp
 import math
 import numpy as np
-import cv2 
+import cv2
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from flask import Flask, request, jsonify
