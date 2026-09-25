@@ -276,7 +276,7 @@ def process_video(video_path, joint):
     angle_values = []
     preview_image_b64 = None # We will store our Base64 image string here
 
-    video = cv2.VideoCapture(video_path)
+    video = cv2.VideoCapture(video_path, cv2.CAP_FFMPEG)
 
     # Create the detector
     # Use the global MODEL_BYTES from RAM instead of reading the file
