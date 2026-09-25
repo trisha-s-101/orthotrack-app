@@ -2,5 +2,6 @@ services:
   - type: web
     name: orthotrack-app
     runtime: python
-    buildCommand: pip install -r requirements.txt && pip uninstall -y opencv-python opencv-contrib-python && pip install opencv-python-headless==4.10.0.84 --force-reinstall
+    pythonVersion: "3.11"
+    buildCommand: pip install -r requirements.txt && pip uninstall -y opencv-python opencv-contrib-python --yes && pip install opencv-python-headless==4.10.0.84
     startCommand: gunicorn app:app
